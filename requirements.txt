@@ -1,0 +1,18 @@
+# Core numerics and data
+numpy
+pandas
+matplotlib
+
+# Reinforcement learning
+gymnasium
+stable-baselines3
+sb3-contrib        # RecurrentPPO for the LSTM agent
+
+# Deep learning
+torch
+
+# Explainability
+shap
+
+# Downloading weather data (Open-Meteo)
+requests
