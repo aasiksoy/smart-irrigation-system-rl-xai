@@ -80,3 +80,69 @@ class CropParams:
             return self.kc_mid + (self.kc_end - self.kc_mid) * day / self.l_late
 
         return self.kc_end
+
+def stress_coefficient(w: float, soil: SoilParams) -> float:
+    """
+    Ks between 0 and 1.
+    1.0 = no stress, 0.0 = wilting point.
+    """
+    if w >= soil.w_stress:
+        return 1.0
+    ks = (w - soil.w_wp) / (soil.w_stress - soil.w_wp)
+    return max(0.0, min(1.0, ks))
+#example graph of ks and water usage
+# Ks
+# 1.0 |              ___________________
+#     |             /
+# 0.5 |           /
+#     |         /
+# 0.0 |_______/
+#     +-------|-----------|-------------|--> water w (mm)
+#            36          66            96
+#       wilting point   stress      field capacity
+#                      threshold
+
+
+def step_day(w: float, rain: float, irrigation: float, et0: float,
+             day: int, soil: SoilParams, crop: CropParams):
+    """
+    Advance root-zone water (mm) by one day.
+    Returns the new water level and a dict of all flows.
+    """
+
+    #1) water coming in
+    w = w + rain + irrigation
+
+    #2) our runoff= water above saturation cannot enter the soil
+    runoff = max(0.0, w-soil.w_sat)
+    w-= runoff
+
+    #3)water above field capacity drains away
+    drainage = soil.drain_rate * max(0.0, w-soil.w_fc)
+    w-= drainage
+
+    #4) what the crop drinks
+    kc = crop.kc(day)
+    ks = stress_coefficient(w,soil)
+    et_demand = ks*kc*et0
+    et_actual = min(et_demand, max(0.0, w - soil.w_wp))
+    w -= et_actual
+
+    day_log = {
+        "rain": rain,
+        "irrigation": irrigation,
+        "runoff": runoff,
+        "drainage": drainage,
+        "et_actual": et_actual,
+        "et_potential": kc * et0,
+        "kc": kc,
+        "ks": ks,
+    }
+    return w, day_log
+
+
+def theta_from_w(w: float, soil: SoilParams) -> float:
+    """
+    Water in mm to volumetric water content (m3/m3)
+    """
+    return w / (1000 * soil.root_depth_m)
