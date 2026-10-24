@@ -37,6 +37,18 @@ class SoilParams:
         return self.w_fc - self.raw
 
 
+#example graph for how kc changes over the seasons:
+# Kc
+# 1.2 |                 ___________
+#     |                /           \
+#     |               /             \
+# 0.6 |              /               \____
+# 0.3 |_____________/
+#     +-----|----------|----------|--------|---> day
+#     0    20         55         95       125
+#      baby  growing    fully grown  ripening
+#      plant           (thirstiest)
+
 @dataclass
 class CropParams:
     kc_ini: float = 0.3
