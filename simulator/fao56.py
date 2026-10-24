@@ -38,4 +38,34 @@ class SoilParams:
 
 
 @dataclass
-class CropParams
+class CropParams:
+    kc_ini: float = 0.3
+    kc_mid: float = 1.2 
+    kc_end: float = 0.6
+    l_ini: int = 20
+    l_dev: int = 35
+    l_mid: int = 40
+    l_late: int = 30
+
+    @property
+    def season_length(self)->int:
+        return self.l_ini + self.l_dev + self.l_mid + self.l_late
+
+    @property
+    def kc(self, day: int)-> float:
+        if day<self.l_ini:
+            return self.kc_ini
+        day -= self.l_ini
+
+        if day<self.l_dev:
+            return self.kc_ini + (self.kc_mid - self.kc_ini) * day/self.l_dev
+        day-= self.l_dev
+
+        if day< self.l_mid:
+            return self.l_mid
+        day -= self.l_mid
+
+        if day< self.l_late:
+            return self.kc_mid + (self.kc_end - self.kc_mid) * day / self.l_late
+
+        return self.kc_end
