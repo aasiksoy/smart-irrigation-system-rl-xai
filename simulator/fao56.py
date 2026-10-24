@@ -63,7 +63,6 @@ class CropParams:
     def season_length(self)->int:
         return self.l_ini + self.l_dev + self.l_mid + self.l_late
 
-    @property
     def kc(self, day: int)-> float:
         if day<self.l_ini:
             return self.kc_ini
@@ -74,7 +73,7 @@ class CropParams:
         day-= self.l_dev
 
         if day< self.l_mid:
-            return self.l_mid
+            return self.kc_mid
         day -= self.l_mid
 
         if day< self.l_late:
