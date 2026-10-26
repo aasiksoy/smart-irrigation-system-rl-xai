@@ -54,8 +54,28 @@ class IrrigationEnv(gym.Env):
         info = self._get_info()
         return observation, info
 
+
     def _get_info(self):
         """Extra information for debugging and plots, not seen by the agent."""
         return {"day": self.day, "water_mm": self.w}
 
+
+    def step(self, action):
+#NOT DONE YETTTTTTT
+        irrigation = self.IRRIGATION_LEVELS[action]
+        rain_today, et0 = self.weather[self.day]
+
+        self.w, day_log = step_day(self.w, rain_today, irrigation, et0, self.day, self.soil, self.crop)
+        # Check if agent reached the target
+        terminated = np.array_equal(self._agent_location, self._target_location)
+
+        terminated = True if self.season_progress == 1 else False
+        truncated = False
+
+        reward = 1 if terminated else 0
+
+        observation = self._get_obs()
+        info = self._get_info()
+
+        return observation, reward, terminated, truncated, info
 
