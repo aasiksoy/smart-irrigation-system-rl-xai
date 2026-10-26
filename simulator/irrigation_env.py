@@ -62,9 +62,9 @@ class IrrigationEnv(gym.Env):
 
     def _compute_reward(self, irrigation, day_log):
         """ All terms are penalties, so the best day scores 0."""
-        water_cost = irrigation * 0.05
-        stress_cost = 1 - day_log["ks"]
-        drainage_cost = day_log["drainage"] * 0.05
+        water_cost = irrigation * 0.02
+        stress_cost = 2.0 * (1 - day_log["ks"])
+        drainage_cost = day_log["drainage"] * 0.02
         return -(water_cost + stress_cost + drainage_cost)
 
     def step(self, action):
