@@ -16,3 +16,6 @@ shap
 
 # Downloading weather data (Open-Meteo)
 requests
+
+#simulation
+aquacrop
