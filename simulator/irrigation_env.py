@@ -60,22 +60,32 @@ class IrrigationEnv(gym.Env):
         return {"day": self.day, "water_mm": self.w}
 
 
+    def _compute_reward(self, irrigation, day_log):
+        """ All terms are penalties, so the best day scores 0."""
+        water_cost = irrigation * 0.05
+        stress_cost = 1 - day_log["ks"]
+        drainage_cost = day_log["drainage"] * 0.05
+        return -(water_cost + stress_cost + drainage_cost)
+
     def step(self, action):
-#NOT DONE YETTTTTTT
         irrigation = self.IRRIGATION_LEVELS[action]
         rain_today, et0 = self.weather[self.day]
-
         self.w, day_log = step_day(self.w, rain_today, irrigation, et0, self.day, self.soil, self.crop)
-        # Check if agent reached the target
-        terminated = np.array_equal(self._agent_location, self._target_location)
 
-        terminated = True if self.season_progress == 1 else False
+        reward = self._compute_reward(irrigation, day_log)
+
+        self.day += 1
+        
+        terminated = True if self.day >= self.crop.season_length else False
         truncated = False
 
-        reward = 1 if terminated else 0
+        if terminated:
+            observation = np.zeros(5, dtype=np.float32)
+        else:
+            observation = self._get_obs()
 
-        observation = self._get_obs()
         info = self._get_info()
+        info.update(day_log)
 
         return observation, reward, terminated, truncated, info
 
