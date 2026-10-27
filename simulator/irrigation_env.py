@@ -8,7 +8,7 @@ class IrrigationEnv(gym.Env):
 
     IRRIGATION_LEVELS = [0.0, 5.0, 10.0, 15.0, 20.0]
 
-    def __init__(self, soil:SoilParams, weather, crop: CropParams = None):
+    def __init__(self, soil:SoilParams, weather_options, crop: CropParams = None):
         """
         soil: the field (SoilParams)
         weather: list of (rain_mm, et0_mm) per day, one entry per season day
@@ -16,7 +16,8 @@ class IrrigationEnv(gym.Env):
         """
         super().__init__()
         self.soil = soil
-        self.weather = weather
+        self.weather_options = weather_options
+        self.weather = None
         self.crop = crop if crop is not None else CropParams()
 
         #picking one of the irrigation levels
@@ -48,6 +49,8 @@ class IrrigationEnv(gym.Env):
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
 
         super().reset(seed=seed)
+        index = self.np_random.integers(0, len(self.weather_options))
+        self.weather = self.weather_options[index]
         self.w = self.soil.w_fc
         self.day = 0
         observation = self._get_obs()

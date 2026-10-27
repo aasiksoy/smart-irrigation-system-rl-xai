@@ -4,7 +4,7 @@ from simulator.irrigation_env import IrrigationEnv
 from tests.test_fao56 import synthetic_weather
 
 soil = SoilParams(theta_wp=0.06, theta_fc=0.16, theta_sat=0.40, drain_rate=0.8)
-env = IrrigationEnv(soil, synthetic_weather(125))
+env = IrrigationEnv(soil, [synthetic_weather(125)])
 
 check_env(env)
 print("check_env passed")
