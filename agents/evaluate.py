@@ -1,3 +1,5 @@
+from simulator.irrigation_env import IrrigationEnv
+
 def run_season(env, choose_action, seed=None):
     """Play one full season and return its totals."""
 
@@ -24,4 +26,23 @@ def run_season(env, choose_action, seed=None):
         "stressed_days": stressed,
         "days": days,
     }
+
+def evaluate(choose_action, soil, test_seasons): 
+    results = []
+    for season in test_seasons:
+        eval_env = IrrigationEnv(soil, [season])
+        result = run_season(eval_env, choose_action, seed=0)
+        results.append(result)
+    
+    avg_reward = sum(r["reward"] for r in results) / len(results)
+    avg_irrigation =sum(r["irrigation"] for r in results) / len(results)
+    avg_stressed_days = sum(r["stressed_days"] for r in results) / len(results)
+    
+    return {
+        "reward": avg_reward,
+        "irrigation": avg_irrigation,
+        "stressed_days": avg_stressed_days,
+        "per_season": results, 
+    }
+
 
