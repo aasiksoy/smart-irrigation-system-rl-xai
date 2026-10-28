@@ -10,7 +10,7 @@ from agents.evaluate import run_season
 
 TOTAL_TIMESTEPS = 100_000
 SEED = 0
-MODEL_PATH = f"checkpoints/ppo_mlp_sandy_seed{SEED}"
+MODEL_PATH = f"checkpoints/ppo_mlp_sandy_scaled_seed{SEED}"
 
 
 def main():

@@ -7,6 +7,7 @@ from typing import Optional
 class IrrigationEnv(gym.Env):
 
     IRRIGATION_LEVELS = [0.0, 5.0, 10.0, 15.0, 20.0]
+    OBS_SCALE = np.array([0.5, 10.0, 50.0, 50.0, 1.0], dtype=np.float32)
 
     def __init__(self, soil:SoilParams, weather_options, crop: CropParams = None):
         """
@@ -26,7 +27,7 @@ class IrrigationEnv(gym.Env):
         # sensor theta, ET0 today, rain today, rain tomorrow, season length]
         self.observation_space = spaces.Box(
             low=np.array([0.0, 0.0, 0.0, 0.0, 0.0], dtype=np.float32),
-            high=np.array([1.0, 15.0, 200.0, 200.0, 1.0], dtype=np.float32),
+            high=np.array([1.0, 15.0, 200.0, 200.0, 1.0], dtype=np.float32)/self.OBS_SCALE,
             dtype=np.float32,
         )
 
@@ -43,7 +44,7 @@ class IrrigationEnv(gym.Env):
         season_length = self.crop.season_length
         season_progress = self.day / season_length
 
-        return np.array([theta, et0, rain_today, rain_tomorrow, season_progress], dtype = np.float32)
+        return np.array([theta, et0, rain_today, rain_tomorrow, season_progress], dtype = np.float32)/self.OBS_SCALE
 
 
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
