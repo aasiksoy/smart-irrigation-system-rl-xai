@@ -8,7 +8,7 @@ from tests.test_fao56 import synthetic_weather
 from agents.evaluate import run_season
 
 
-TOTAL_TIMESTEPS = 100_000
+TOTAL_TIMESTEPS = 300_000
 SEED = 0
 OLD_MODEL_PATH = f"checkpoints/ppo_mlp_sandy_seed{SEED}"
 NEW_MODEL_PATH = f"checkpoints/weather_experiment/ppo_mlp_multiple_weathers_seed{SEED}"
@@ -29,11 +29,11 @@ def main():
     print("Number of the training seasons ", len(train_seasons))
     print("Number of the test seasons ", len(test_seasons))
 
-    # env = IrrigationEnv(soil,train_seasons)
-    # model = PPO("MlpPolicy", env, verbose=1, seed=SEED) 
-    # model.learn(total_timesteps=TOTAL_TIMESTEPS)
-    # model.save(NEW_MODEL_PATH) 
-    model = PPO.load(NEW_MODEL_PATH)
+    env = IrrigationEnv(soil,train_seasons)
+    model = PPO("MlpPolicy", env, verbose=1, seed=SEED) 
+    model.learn(total_timesteps=TOTAL_TIMESTEPS)
+    model.save(NEW_MODEL_PATH) 
+   # model = PPO.load(NEW_MODEL_PATH)
 
     results = []
     ppo = lambda obs, env: model.predict(obs, deterministic=True)[0]
