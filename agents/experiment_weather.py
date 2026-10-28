@@ -51,3 +51,36 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+SEEDS = [0, 1, 2]
+
+def main():
+    soil = SoilParams(theta_wp=0.06, theta_fc=0.16, theta_sat=0.40, drain_rate=0.8) 
+    
+    train_seasons= [] 
+    for i in range(0,100):
+        train_seasons.append(synthetic_weather(125,i))
+
+    test_seasons= []  
+    for i in range(100,150):
+        test_seasons.append(synthetic_weather(125,i))
+
+    print("Number of the training seasons ", len(train_seasons))
+    print("Number of the test seasons ", len(test_seasons))
+
+    one_season = [train_seasons[0]]
+
+    # 3. threshold and fixed: evaluate ONCE (no randomness -> no seeds needed), print
+
+    varied_scores = []
+    one_season_scores = []
+
+    # 5. for seed in SEEDS:
+    #       - train varied agent on train_seasons (seed=seed), save with seed in the name
+    #       - train one-season agent on one_season (seed=seed), save with seed in the name
+    #       - evaluate both on test_seasons
+    #       - append each result dict to its bag
+
+    # 6. after the loop: for each bag, mean and std of reward, irrigation, stressed days
+    #    (np.mean / np.std over the per-seed values), print one row per agent
