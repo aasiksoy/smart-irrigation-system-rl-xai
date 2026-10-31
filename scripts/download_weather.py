@@ -1,3 +1,4 @@
+import os
 import openmeteo_requests
 
 import pandas as pd
@@ -32,6 +33,14 @@ print(f"Coordinates: {response.Latitude()}°N {response.Longitude()}°E")
 # Process daily data. The order of variables needs to be the same as requested in params["daily"]
 daily = response.Daily()
 
+offset = response.UtcOffsetSeconds()
+
+dates = pd.date_range(
+    start=pd.to_datetime(daily.Time() + offset, unit="s"),
+    end=pd.to_datetime(daily.TimeEnd() + offset, unit="s"),
+    freq=pd.Timedelta(seconds=daily.Interval()),
+    inclusive="left",
+)
 dates = pd.date_range(
     start=pd.to_datetime(daily.Time(), unit="s", utc=True),
     end=pd.to_datetime(daily.TimeEnd(), unit="s", utc=True),
