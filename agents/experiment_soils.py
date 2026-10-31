@@ -13,19 +13,19 @@ from agents.evaluate import evaluate
 SEEDS = [0, 1, 2]
 TOTAL_TIMESTEPS = 300_000 
 
-# SEEDS = [0]
-# TOTAL_TIMESTEPS = 5_000
+#SEEDS = [0]
+#TOTAL_TIMESTEPS = 5_000 
 
 
 def print_row(name, r):
-    print(f"{name:22s} | irrigation {r['irrigation']:6.0f} mm | "
+    print(f"{name:25s} | irrigation {r['irrigation']:6.0f} mm | "
           f"stressed days {r['stressed_days']:5.1f} | reward {r['reward']:7.1f}")
 
 
 def summarize(name, scores):
     for key in ["reward", "irrigation", "stressed_days"]:
         values = [s[key] for s in scores]
-        print(f"{name:22s} {key:14s} {np.mean(values):7.1f} ± {np.std(values):.2f}")
+        print(f"{name:25s} {key:14s} {np.mean(values):7.1f} ± {np.std(values):.2f}")
 
 
 def main():
@@ -57,12 +57,15 @@ def main():
 
     many_soils_scores = []
     one_soil_scores = []
+    informed_scores = []
 
 
     for seed in SEEDS:
-        many_path = f"checkpoints/soil_experiment/ppo_mlp_many_soils_300k_seed{seed}"
-        one_path = f"checkpoints/soil_experiment/ppo_mlp_one_soil_300k_seed{seed}"
-
+        steps = f"{TOTAL_TIMESTEPS // 1000}k"
+        many_path = f"checkpoints/soil_experiment/ppo_mlp_many_soils_{steps}_seed{seed}"
+        one_path = f"checkpoints/soil_experiment/ppo_mlp_one_soil_{steps}_seed{seed}"
+        informed_path = f"checkpoints/soil_experiment/ppo_mlp_informed_{steps}_seed{seed}"
+        
         env = IrrigationEnv(train_soils, train_seasons)
         model = PPO("MlpPolicy", env, verbose=0, seed=seed)
         model.learn(total_timesteps=TOTAL_TIMESTEPS)
@@ -75,15 +78,25 @@ def main():
         one_model.save(one_path)
         one_ppo = lambda obs, env: one_model.predict(obs, deterministic=True)[0]
 
+        env_inf = IrrigationEnv(train_soils, train_seasons, informed=True)
+        inf_model = PPO("MlpPolicy", env_inf, verbose=0, seed=seed)
+        inf_model.learn(total_timesteps=TOTAL_TIMESTEPS)
+        inf_model.save(informed_path)
+        inf_ppo = lambda obs, env: inf_model.predict(obs, deterministic=True)[0]
+
         eval_ppo = evaluate(ppo, test_soils, test_seasons)
         many_soils_scores.append(eval_ppo)
 
         eval_one = evaluate(one_ppo, test_soils, test_seasons)
         one_soil_scores.append(eval_one)
 
+        eval_inf = evaluate(inf_ppo, test_soils, test_seasons, informed=True)
+        informed_scores.append(eval_inf)
+        
         print(f"seed {seed} done") 
         print_row(f"many soils, seed {seed}", eval_ppo)
         print_row(f"one soil, seed {seed}", eval_one)
+        print_row(f"informed, seed {seed}", eval_inf)
 
 
     print("\nRule-based (single run)")
@@ -94,6 +107,7 @@ def main():
     print(f"\nPPO, mean ± std over {len(SEEDS)} seeds")
     summarize("PPO, many soils", many_soils_scores)
     summarize("PPO, one soil", one_soil_scores)
+    summarize("PPO, informed", informed_scores)
 
 
 if __name__ == "__main__":
