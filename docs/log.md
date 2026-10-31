@@ -47,3 +47,12 @@ Seville 35.7 / 7.2 / 0.1 (mm/day).
 
 **OBS_SCALE check (real weather, training years 1990–2015):** rain 99% ≤ 16 mm (max 59.9),
 ET0 99% ≤ 8.8 mm (max 10.6) → scales [0.5, 10, 50, 50, 1] kept unchanged.
+
+## 2026-10-31 — Informed agent: the price of not knowing the soil
+Settings: 50 train soils (seed 0), 20 test soils (seed 1000), 100 train / 10 test synthetic
+seasons, PPO MLP 300k steps, seeds 0–2.
+Results: informed −5.3 ± 0.02 (239 mm, 1.7 stressed days), many soils −8.4 ± 0.37
+(267 mm, 7.1), oracle −5.6, one soil −72.5. Many/one-soil runs reproduce earlier numbers exactly.
+Takeaway: the entire gap to the oracle is caused by not knowing the soil.
+Price of not knowing: 3.1 reward points, +29 mm water (+12%), +5.4 stressed days.
+Next: LSTM (RecurrentPPO) — can memory infer the soil and close the gap?
