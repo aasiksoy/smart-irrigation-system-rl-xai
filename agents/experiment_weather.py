@@ -54,13 +54,13 @@ def main():
         varied_path = f"checkpoints/weather_experiment/ppo_mlp_varied_scaled_300k_seed{seed}"
         one_path = f"checkpoints/weather_experiment/ppo_mlp_one_season_scaled_100k_seed{seed}"
 
-        env = IrrigationEnv(soil, train_seasons)
+        env = IrrigationEnv([soil], train_seasons)
         model = PPO("MlpPolicy", env, verbose=0, seed=seed)
         model.learn(total_timesteps=TOTAL_TIMESTEPS)
         model.save(varied_path)
         ppo = lambda obs, env: model.predict(obs, deterministic=True)[0]
 
-        env_one = IrrigationEnv(soil, one_season)
+        env_one = IrrigationEnv([soil], one_season)
         one_model = PPO("MlpPolicy", env_one, verbose=0, seed=seed)
         one_model.learn(total_timesteps=TOTAL_TIMESTEPS)
         one_model.save(one_path)

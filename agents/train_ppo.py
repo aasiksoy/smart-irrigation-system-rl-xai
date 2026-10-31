@@ -18,12 +18,12 @@ def main():
     weather = synthetic_weather(crop.season_length)
     soil = SoilParams(theta_wp=0.06, theta_fc=0.16, theta_sat=0.40, drain_rate=0.8) 
 
-    env = IrrigationEnv(soil, [synthetic_weather(125)])
+    env = IrrigationEnv([soil], [synthetic_weather(125)])
     model = PPO("MlpPolicy", env, verbose=1, seed=SEED) 
     model.learn(total_timesteps=TOTAL_TIMESTEPS)
     model.save(MODEL_PATH) 
 
-    eval_env = IrrigationEnv(soil, [weather])
+    eval_env = IrrigationEnv([soil], [weather])
 
     ppo = lambda obs, env: model.predict(obs, deterministic=True)[0]
     result = run_season(eval_env, ppo, seed=0)

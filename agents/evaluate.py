@@ -30,7 +30,7 @@ def run_season(env, choose_action, seed=None):
 def evaluate(choose_action, soil, test_seasons): 
     results = []
     for season in test_seasons:
-        eval_env = IrrigationEnv(soil, [season])
+        eval_env = IrrigationEnv([soil], [season])
         result = run_season(eval_env, choose_action, seed=0)
         results.append(result)
     

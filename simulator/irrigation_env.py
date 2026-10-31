@@ -9,14 +9,15 @@ class IrrigationEnv(gym.Env):
     IRRIGATION_LEVELS = [0.0, 5.0, 10.0, 15.0, 20.0]
     OBS_SCALE = np.array([0.5, 10.0, 50.0, 50.0, 1.0], dtype=np.float32)
 
-    def __init__(self, soil:SoilParams, weather_options, crop: CropParams = None):
+    def __init__(self, soil_options: list[SoilParams], weather_options, crop: CropParams = None):
         """
-        soil: the field (SoilParams)
-        weather: list of (rain_mm, et0_mm) per day, one entry per season day
+        soil_options: list of SoilParams; one is picked at random each episode
+        weather_options: list of seasons, each a list of (rain_mm, et0_mm) per day
         crop: crop curve; maize defults if not given
         """
         super().__init__()
-        self.soil = soil
+        self.soil = None #note to myself: we pick the soil in reset (reason for changing)
+        self.soil_options = soil_options
         self.weather_options = weather_options
         self.weather = None
         self.crop = crop if crop is not None else CropParams()
@@ -52,6 +53,7 @@ class IrrigationEnv(gym.Env):
         super().reset(seed=seed)
         index = self.np_random.integers(0, len(self.weather_options))
         self.weather = self.weather_options[index]
+        self.soil = self.soil_options[self.np_random.integers(0,len(self.soil_options))]
         self.w = self.soil.w_fc
         self.day = 0
         observation = self._get_obs()
@@ -61,8 +63,14 @@ class IrrigationEnv(gym.Env):
 
     def _get_info(self):
         """Extra information for debugging and plots, not seen by the agent."""
-        return {"day": self.day, "water_mm": self.w}
-
+        return {
+            "day": self.day,
+            "water_mm": self.w,
+            "theta_wp": self.soil.theta_wp,
+            "theta_fc": self.soil.theta_fc,
+            "theta_sat": self.soil.theta_sat,
+            "drain_rate": self.soil.drain_rate,
+        }
 
     def _compute_reward(self, irrigation, day_log):
         """ All terms are penalties, so the best day scores 0."""
