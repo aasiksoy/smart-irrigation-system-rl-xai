@@ -28,6 +28,8 @@ responses = openmeteo.weather_api(url, params = params)
 
 # Process first location. Add a for-loop for multiple locations or weather models
 response = responses[0]
+print("UTC offset (s):", response.UtcOffsetSeconds())
+print("First raw time:", pd.to_datetime(response.Daily().Time(), unit="s"))
 print(f"Coordinates: {response.Latitude()}°N {response.Longitude()}°E")
 
 # Process daily data. The order of variables needs to be the same as requested in params["daily"]
@@ -41,12 +43,7 @@ dates = pd.date_range(
     freq=pd.Timedelta(seconds=daily.Interval()),
     inclusive="left",
 )
-dates = pd.date_range(
-    start=pd.to_datetime(daily.Time(), unit="s", utc=True),
-    end=pd.to_datetime(daily.TimeEnd(), unit="s", utc=True),
-    freq=pd.Timedelta(seconds=daily.Interval()),
-    inclusive="left",
-)
+
 
 df = pd.DataFrame({
     "date": dates.date,
