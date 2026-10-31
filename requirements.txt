@@ -22,3 +22,8 @@ aquacrop
 
 #tests
 pytest
+
+# Weather data (Open-Meteo)
+openmeteo-requests
+requests-cache
+retry-requests
