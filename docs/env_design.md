@@ -11,23 +11,25 @@ When should episodes end?
 One episode = one growing season, ending at harvest.
 
 
-seed 0 done
-  varied, seed 0       | irrigation    249 mm | stressed days   1.3 | reward    -5.7
-  one season, seed 0   | irrigation    248 mm | stressed days   0.5 | reward    -5.6
-seed 1 done
-  varied, seed 1       | irrigation    246 mm | stressed days   1.5 | reward    -5.7
-  one season, seed 1   | irrigation    247 mm | stressed days   0.8 | reward    -5.6
-seed 2 done
-  varied, seed 2       | irrigation    249 mm | stressed days   1.2 | reward    -5.7
-  one season, seed 2   | irrigation    248 mm | stressed days   0.4 | reward    -5.6
-\Rule-based (single run)
-Threshold oracle       | irrigation    270 mm | stressed days   0.0 | reward    -6.4
-Fixed 5 mm/day         | irrigation    625 mm | stressed days   0.0 | reward   -20.3
+How do we measure success? (reward)
+reward = −(0.02 × irrigation_mm + 2.0 × (1 − Ks) + 0.02 × drainage_mm)
+Stress is weighted heavily: with the first weights (0.05 / 1 / 0.05), never irrigating
+scored best, which is agronomically wrong.
 
-PPO, mean ± std over 3 seeds
-PPO, varied weather    reward            -5.7 ± 0.0
-PPO, varied weather    irrigation       248.2 ± 1.3
-PPO, varied weather    stressed_days      1.3 ± 0.1
-PPO, one season        reward            -5.6 ± 0.0
-PPO, one season        irrigation       247.9 ± 0.5
-PPO, one season        stressed_days      0.6 ± 0.2
+What does the agent NOT see?
+Water in mm, field capacity, wilting point, drain rate. Partial observability on purpose:
+a real sensor only gives θ; the agent must infer the soil.
+
+Observation scaling
+Each input is divided by OBS_SCALE = [0.5, 10, 50, 50, 1] (θ, ET₀, rain, rain tomorrow,
+progress), chosen from the training data (max ET₀ 8.7, max rain 68.7; θ ≤ θ_sat ≤ 0.5).
+One fixed scale for all soils, so it carries no soil information.
+
+Soils
+Random soils: θ_wp 0.05–0.20, θ_fc = θ_wp + 0.08–0.20, θ_sat = θ_fc + 0.10–0.50,
+drain_rate 0.2–0.9. Train and test soils come from different seeds.
+
+Baselines
+- Threshold oracle: knows each field's true stress threshold (upper reference)
+- Fixed-trigger threshold: one θ trigger for every field (sensor, no soil analysis)
+- Fixed 5 mm/day: naive schedule

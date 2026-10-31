@@ -27,12 +27,15 @@ def run_season(env, choose_action, seed=None):
         "days": days,
     }
 
-def evaluate(choose_action, soil, test_seasons): 
+def evaluate(choose_action, soils, test_seasons): 
+    """Play every (soil, season) pair once with this strategy; return the averages."""
     results = []
-    for season in test_seasons:
-        eval_env = IrrigationEnv([soil], [season])
-        result = run_season(eval_env, choose_action, seed=0)
-        results.append(result)
+    for soil in soils: 
+        for season in test_seasons:
+            eval_env = IrrigationEnv([soil], [season])
+            result = run_season(eval_env, choose_action, seed=0)
+            result["soil"] = soil 
+            results.append(result)
     
     avg_reward = sum(r["reward"] for r in results) / len(results)
     avg_irrigation =sum(r["irrigation"] for r in results) / len(results)
@@ -42,7 +45,7 @@ def evaluate(choose_action, soil, test_seasons):
         "reward": avg_reward,
         "irrigation": avg_irrigation,
         "stressed_days": avg_stressed_days,
-        "per_season": results, 
+        "per_episode": results, 
     }
 
 

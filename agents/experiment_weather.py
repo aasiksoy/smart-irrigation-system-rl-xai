@@ -43,8 +43,8 @@ def main():
     threshold = lambda obs, env: 4 if env.w < env.soil.w_stress else 0
     fixed_5mm = lambda obs, env: 1
 
-    eval_threshold = evaluate(threshold, soil, test_seasons)
-    eval_fixed = evaluate(fixed_5mm, soil, test_seasons)
+    eval_threshold = evaluate(threshold, [soil], test_seasons)
+    eval_fixed = evaluate(fixed_5mm, [soil], test_seasons)
 
     varied_scores = []
     one_season_scores = []
@@ -66,10 +66,10 @@ def main():
         one_model.save(one_path)
         one_ppo = lambda obs, env: one_model.predict(obs, deterministic=True)[0]
 
-        eval_ppo = evaluate(ppo, soil, test_seasons)
+        eval_ppo = evaluate(ppo, [soil], test_seasons)
         varied_scores.append(eval_ppo)
 
-        eval_one = evaluate(one_ppo, soil, test_seasons)
+        eval_one = evaluate(one_ppo, [soil], test_seasons)
         one_season_scores.append(eval_one)
 
         print(f"seed {seed} done") 
@@ -77,7 +77,7 @@ def main():
         print_row(f"  one season, seed {seed}", eval_one)
 
 
-    print("\Rule-based (single run)")
+    print("\nRule-based (single run)")
     print_row("Threshold oracle", eval_threshold)
     print_row("Fixed 5 mm/day", eval_fixed)
 
