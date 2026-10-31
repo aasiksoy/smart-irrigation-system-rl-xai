@@ -19,3 +19,6 @@ requests
 
 #simulation
 aquacrop
+
+#tests
+pytest
