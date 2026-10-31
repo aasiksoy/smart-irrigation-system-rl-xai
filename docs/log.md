@@ -36,3 +36,14 @@ Added fixed-trigger baseline (one θ trigger = mean training stress threshold, 0
 **Results (rule-based):** oracle −5.6, fixed 5 mm −19.9, fixed trigger −32.7
 (404 mm AND 23.8 stressed days) → not knowing the soil is very costly for a simple rule.
 **Next:** Full run (3 seeds, 300k): one-soil vs many-soils PPO on unseen soils.
+
+## 2026-10-31 — Real weather (Open-Meteo)
+**Did:** Download script for Leuven, Nicosia, Seville (1990–2023, daily rain, ET0, tmax, tmin).
+Fixed an off-by-one-day bug (UTC vs local time). load_seasons() cuts each year into a
+125-day season from 1 May. 5 pytest tests pass.
+**Data:** July averages — Leuven 22.7 °C / ET0 3.7 / rain 2.4; Nicosia 36.2 / 7.3 / 0.1;
+Seville 35.7 / 7.2 / 0.1 (mm/day).
+**Next:** Check OBS_SCALE against real training-year extremes, then train on real weather.
+
+**OBS_SCALE check (real weather, training years 1990–2015):** rain 99% ≤ 16 mm (max 59.9),
+ET0 99% ≤ 8.8 mm (max 10.6) → scales [0.5, 10, 50, 50, 1] kept unchanged.

@@ -9,7 +9,7 @@ class IrrigationEnv(gym.Env):
     IRRIGATION_LEVELS = [0.0, 5.0, 10.0, 15.0, 20.0]
     OBS_SCALE = np.array([0.5, 10.0, 50.0, 50.0, 1.0], dtype=np.float32)
 
-    def __init__(self, soil_options: list[SoilParams], weather_options, crop: CropParams = None):
+    def __init__(self, soil_options: list[SoilParams], weather_options, crop: CropParams = None, informed: bool = False):
         """
         soil_options: list of SoilParams; one is picked at random each episode
         weather_options: list of seasons, each a list of (rain_mm, et0_mm) per day
@@ -21,22 +21,36 @@ class IrrigationEnv(gym.Env):
         self.weather_options = weather_options
         self.weather = None
         self.crop = crop if crop is not None else CropParams()
+        self.informed = informed
 
-        #picking one of the irrigation levels
+    def __init__(self, soil_options: list[SoilParams], weather_options,
+                 crop: CropParams = None, informed: bool = False):
+        super().__init__()
+        self.soil_options = soil_options
+        self.soil = None
+        self.weather_options = weather_options
+        self.weather = None
+        self.crop = crop if crop is not None else CropParams()
+        self.informed = informed  
+
         self.action_space = spaces.Discrete(len(self.IRRIGATION_LEVELS))
-        # what the agent can see
-        # sensor theta, ET0 today, rain today, rain tomorrow, season length]
-        self.observation_space = spaces.Box(
-            low=np.array([0.0, 0.0, 0.0, 0.0, 0.0], dtype=np.float32),
-            high=np.array([1.0, 15.0, 200.0, 200.0, 1.0], dtype=np.float32)/self.OBS_SCALE,
-            dtype=np.float32,
-        )
+
+        #what the agents see
+        low = np.zeros(5, dtype=np.float32)
+        high = np.array([1.0, 15.0, 200.0, 200.0, 1.0], dtype=np.float32) / self.OBS_SCALE
+
+        if self.informed:
+            low = np.concatenate([low, np.zeros(3, dtype=np.float32)])
+            high = np.concatenate([high, np.ones(3, dtype=np.float32)])
+
+        self.observation_space = spaces.Box(low=low, high=high, dtype=np.float32)
 
 
     def _get_obs(self):
 
         theta = theta_from_w(self.w, self.soil)
         rain_today, et0 = self.weather[self.day]
+
         if len(self.weather) == self.day + 1 :
             rain_tomorrow = 0.0
         else:
@@ -45,8 +59,16 @@ class IrrigationEnv(gym.Env):
         season_length = self.crop.season_length
         season_progress = self.day / season_length
 
-        return np.array([theta, et0, rain_today, rain_tomorrow, season_progress], dtype = np.float32)/self.OBS_SCALE
+        obs = np.array([theta, et0, rain_today, rain_tomorrow, season_progress],
+                       dtype=np.float32) / self.OBS_SCALE
 
+        if self.informed:
+            soil_info = np.array([self.soil.theta_wp / 0.5,
+                                  self.soil.theta_fc / 0.5,
+                                  self.soil.drain_rate], dtype=np.float32)
+            obs = np.concatenate([obs, soil_info])
+
+        return obs
 
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
 
@@ -92,7 +114,7 @@ class IrrigationEnv(gym.Env):
         truncated = False
 
         if terminated:
-            observation = np.zeros(5, dtype=np.float32)
+            observation = np.zeros(self.observation_space.shape, dtype=np.float32)
         else:
             observation = self._get_obs()
 
