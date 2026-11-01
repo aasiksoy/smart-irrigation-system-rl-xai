@@ -1,4 +1,5 @@
 from simulator.irrigation_env import IrrigationEnv
+import numpy as np
 
 def run_season(env, choose_action, seed=None):
     """Play one full season and return its totals."""
@@ -49,3 +50,25 @@ def evaluate(choose_action, soils, test_seasons, informed=False):
     }
 
 
+class LstmStrategy:
+    def __init__(self, model):
+        """Remember the model; start with empty memory."""
+        self.state = None
+        self.episode_start = True
+        self.model = model
+
+    def reset(self):
+        """Wipe the memory: call at the start of every season."""
+        self.state = None
+        self.episode_start = True
+
+    def __call__(self, obs, env):
+        """Pick today's action, using and updating the memory."""
+        action, self.state = self.model.predict(
+            obs,
+            state=self.state,
+            episode_start=np.array([self.episode_start]),
+            deterministic=True,
+        )
+        self.episode_start = False
+        return action

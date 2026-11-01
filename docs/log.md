@@ -56,3 +56,9 @@ Results: informed −5.3 ± 0.02 (239 mm, 1.7 stressed days), many soils −8.4 
 Takeaway: the entire gap to the oracle is caused by not knowing the soil.
 Price of not knowing: 3.1 reward points, +29 mm water (+12%), +5.4 stressed days.
 Next: LSTM (RecurrentPPO) — can memory infer the soil and close the gap?
+
+## 2026-11-01 — Start of LSTM 
+
+On a field with an unknown soil, today’s θ alone isn’t enough. θ = 0.2 can mean “wet” (sandy soil) or “dry” (heavy soil). You can only tell by watching how θ changes over several days: how fast it drops after rain.
+
+An LSTM agent has memory, it stores states in between days, and resets these states when a new season starts.
