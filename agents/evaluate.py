@@ -4,6 +4,9 @@ import numpy as np
 def run_season(env, choose_action, seed=None):
     """Play one full season and return its totals."""
 
+    if hasattr(choose_action, "reset"):
+        choose_action.reset()
+        
     obs, info = env.reset(seed=seed)
 
     terminated = False

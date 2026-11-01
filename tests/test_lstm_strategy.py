@@ -19,8 +19,6 @@ def test_lstm_strategy_runs_a_full_season():
     model = RecurrentPPO("MlpLstmPolicy", env, seed=0) 
     
     strategy = LstmStrategy(model)
-
-    strategy.reset()
     result = run_season(env, strategy, seed=0)
 
     assert result["days"] == 125, f"season lasted {result['days']} days, expected 125"
@@ -32,10 +30,8 @@ def test_reset_gives_identical_results():
     model = RecurrentPPO("MlpLstmPolicy", env, seed=0)
     strategy = LstmStrategy(model)
 
-    strategy.reset()
     first = run_season(env, strategy, seed=0)
 
-    strategy.reset()
     second = run_season(env, strategy, seed=0)
 
     assert first == second, f"results differ after reset:\n{first}\n{second}"
