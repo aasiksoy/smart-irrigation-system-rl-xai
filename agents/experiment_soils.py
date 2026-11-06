@@ -32,7 +32,7 @@ class ProgressLog(BaseCallback):
 
 
 BASELINE_STEPS = "300k"
-SEEDS = [0,1,2]
+SEEDS = [1,2]
 LSTM_TIMESTEPS = 300_000
 
 #quick test:
