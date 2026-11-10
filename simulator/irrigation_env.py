@@ -25,14 +25,17 @@ class IrrigationEnv(gym.Env):
 
     def __init__(self, soil_options: list[SoilParams], weather_options,
                  crop: CropParams = None, informed: bool = False, remember_start: bool = False,
-                 start_range=None):
+                 start_range=None, informed_params=None):
         super().__init__()
         self.soil_options = soil_options
         self.soil = None
         self.weather_options = weather_options
         self.weather = None
         self.crop = crop if crop is not None else CropParams()
-        self.informed = informed  
+        if informed_params is None:
+            informed_params = ["theta_wp", "theta_fc", "drain_rate"] if informed else []
+        self.informed_params = list(informed_params)
+        self.informed = len(self.informed_params) > 0
         self.remember_start = remember_start
         self.theta_start = 0.0
         self.start_range = start_range
@@ -48,8 +51,9 @@ class IrrigationEnv(gym.Env):
             high = np.concatenate([high, np.ones(1, dtype=np.float32)])
 
         if self.informed:
-            low = np.concatenate([low, np.zeros(3, dtype=np.float32)])
-            high = np.concatenate([high, np.ones(3, dtype=np.float32)])
+            n = len(self.informed_params)
+            low = np.concatenate([low, np.zeros(n, dtype=np.float32)])
+            high = np.concatenate([high, np.ones(n, dtype=np.float32)])
 
         self.observation_space = spaces.Box(low=low, high=high, dtype=np.float32)
 
@@ -74,9 +78,10 @@ class IrrigationEnv(gym.Env):
             obs = np.concatenate([obs, np.array([self.theta_start / 0.5], dtype=np.float32)])
 
         if self.informed:
-            soil_info = np.array([self.soil.theta_wp / 0.5,
-                                  self.soil.theta_fc / 0.5,
-                                  self.soil.drain_rate], dtype=np.float32)
+            values = {"theta_wp": self.soil.theta_wp / 0.5,
+                      "theta_fc": self.soil.theta_fc / 0.5,
+                      "drain_rate": self.soil.drain_rate}
+            soil_info = np.array([values[p] for p in self.informed_params], dtype=np.float32)
             obs = np.concatenate([obs, soil_info])
 
         return obs

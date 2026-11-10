@@ -31,12 +31,12 @@ def run_season(env, choose_action, seed=None):
         "days": days,
     }
 
-def evaluate(choose_action, soils, test_seasons, informed=False, remember_start=False, start_range=None):
+def evaluate(choose_action, soils, test_seasons, **env_kwargs):
     results = []
     episode = 0
     for soil in soils:
         for season in test_seasons:
-            eval_env = IrrigationEnv([soil], [season], informed=informed, remember_start=remember_start, start_range=start_range)
+            eval_env = IrrigationEnv([soil], [season], **env_kwargs)
             result = run_season(eval_env, choose_action, seed=episode)
             episode += 1
             result["soil"] = soil 
