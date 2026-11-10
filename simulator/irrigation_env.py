@@ -24,7 +24,7 @@ class IrrigationEnv(gym.Env):
         self.informed = informed
 
     def __init__(self, soil_options: list[SoilParams], weather_options,
-                 crop: CropParams = None, informed: bool = False):
+                 crop: CropParams = None, informed: bool = False, remember_start: bool = False):
         super().__init__()
         self.soil_options = soil_options
         self.soil = None
@@ -32,12 +32,18 @@ class IrrigationEnv(gym.Env):
         self.weather = None
         self.crop = crop if crop is not None else CropParams()
         self.informed = informed  
+        self.remember_start = remember_start
+        self.theta_start = 0.0
 
         self.action_space = spaces.Discrete(len(self.IRRIGATION_LEVELS))
 
         #what the agents see
         low = np.zeros(5, dtype=np.float32)
         high = np.array([1.0, 15.0, 200.0, 200.0, 1.0], dtype=np.float32) / self.OBS_SCALE
+
+        if self.remember_start:
+            low = np.concatenate([low, np.zeros(1, dtype=np.float32)])
+            high = np.concatenate([high, np.ones(1, dtype=np.float32)])
 
         if self.informed:
             low = np.concatenate([low, np.zeros(3, dtype=np.float32)])
@@ -62,6 +68,9 @@ class IrrigationEnv(gym.Env):
         obs = np.array([theta, et0, rain_today, rain_tomorrow, season_progress],
                        dtype=np.float32) / self.OBS_SCALE
 
+        if self.remember_start:
+            obs = np.concatenate([obs, np.array([self.theta_start / 0.5], dtype=np.float32)])
+
         if self.informed:
             soil_info = np.array([self.soil.theta_wp / 0.5,
                                   self.soil.theta_fc / 0.5,
@@ -77,6 +86,7 @@ class IrrigationEnv(gym.Env):
         self.weather = self.weather_options[index]
         self.soil = self.soil_options[self.np_random.integers(0,len(self.soil_options))]
         self.w = self.soil.w_fc
+        self.theta_start = theta_from_w(self.w, self.soil)
         self.day = 0
         observation = self._get_obs()
         info = self._get_info()
@@ -122,4 +132,3 @@ class IrrigationEnv(gym.Env):
         info.update(day_log)
 
         return observation, reward, terminated, truncated, info
-
