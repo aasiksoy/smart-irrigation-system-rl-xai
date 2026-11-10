@@ -24,7 +24,8 @@ class IrrigationEnv(gym.Env):
         self.informed = informed
 
     def __init__(self, soil_options: list[SoilParams], weather_options,
-                 crop: CropParams = None, informed: bool = False, remember_start: bool = False):
+                 crop: CropParams = None, informed: bool = False, remember_start: bool = False,
+                 start_range=None):
         super().__init__()
         self.soil_options = soil_options
         self.soil = None
@@ -34,6 +35,7 @@ class IrrigationEnv(gym.Env):
         self.informed = informed  
         self.remember_start = remember_start
         self.theta_start = 0.0
+        self.start_range = start_range
 
         self.action_space = spaces.Discrete(len(self.IRRIGATION_LEVELS))
 
@@ -85,7 +87,11 @@ class IrrigationEnv(gym.Env):
         index = self.np_random.integers(0, len(self.weather_options))
         self.weather = self.weather_options[index]
         self.soil = self.soil_options[self.np_random.integers(0,len(self.soil_options))]
-        self.w = self.soil.w_fc
+        if self.start_range is None:
+            self.w = self.soil.w_fc
+        else:
+            fraction = self.np_random.uniform(self.start_range[0], self.start_range[1])
+            self.w = self.soil.w_wp + fraction * (self.soil.w_fc - self.soil.w_wp)
         self.theta_start = theta_from_w(self.w, self.soil)
         self.day = 0
         observation = self._get_obs()
