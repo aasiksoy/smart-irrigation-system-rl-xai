@@ -25,7 +25,8 @@ class IrrigationEnv(gym.Env):
 
     def __init__(self, soil_options: list[SoilParams], weather_options,
                  crop: CropParams = None, informed: bool = False, remember_start: bool = False,
-                 start_range=None, informed_params=None):
+                 start_range=None, informed_params=None,
+                 stress_memory: bool = False, probe_bonus: float = 0.0):
         super().__init__()
         self.soil_options = soil_options
         self.soil = None
@@ -39,6 +40,10 @@ class IrrigationEnv(gym.Env):
         self.remember_start = remember_start
         self.theta_start = 0.0
         self.start_range = start_range
+        self.stress_memory = stress_memory
+        self.probe_bonus = probe_bonus
+        self.stress_seen = 0.0
+        self.theta_stress_seen = 0.0
 
         self.action_space = spaces.Discrete(len(self.IRRIGATION_LEVELS))
 
@@ -49,6 +54,10 @@ class IrrigationEnv(gym.Env):
         if self.remember_start:
             low = np.concatenate([low, np.zeros(1, dtype=np.float32)])
             high = np.concatenate([high, np.ones(1, dtype=np.float32)])
+
+        if self.stress_memory:
+            low = np.concatenate([low, np.zeros(2, dtype=np.float32)])
+            high = np.concatenate([high, np.ones(2, dtype=np.float32)])
 
         if self.informed:
             n = len(self.informed_params)
@@ -77,6 +86,10 @@ class IrrigationEnv(gym.Env):
         if self.remember_start:
             obs = np.concatenate([obs, np.array([self.theta_start / 0.5], dtype=np.float32)])
 
+        if self.stress_memory:
+            memory = np.array([self.stress_seen, self.theta_stress_seen / 0.5], dtype=np.float32)
+            obs = np.concatenate([obs, memory])
+
         if self.informed:
             values = {"theta_wp": self.soil.theta_wp / 0.5,
                       "theta_fc": self.soil.theta_fc / 0.5,
@@ -98,6 +111,8 @@ class IrrigationEnv(gym.Env):
             fraction = self.np_random.uniform(self.start_range[0], self.start_range[1])
             self.w = self.soil.w_wp + fraction * (self.soil.w_fc - self.soil.w_wp)
         self.theta_start = theta_from_w(self.w, self.soil)
+        self.stress_seen = 0.0
+        self.theta_stress_seen = 0.0
         self.day = 0
         observation = self._get_obs()
         info = self._get_info()
@@ -128,6 +143,12 @@ class IrrigationEnv(gym.Env):
         self.w, day_log = step_day(self.w, rain_today, irrigation, et0, self.day, self.soil, self.crop)
 
         reward = self._compute_reward(irrigation, day_log)
+
+        if day_log["ks"] < 1.0:
+            if self.stress_seen == 0.0:
+                reward += self.probe_bonus
+            self.stress_seen = 1.0
+            self.theta_stress_seen = max(self.theta_stress_seen, theta_from_w(self.w, self.soil))
 
         self.day += 1
         
