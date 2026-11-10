@@ -221,3 +221,11 @@ __marimo__/
 
 
 
+
+# Project: generated files
+data/
+results/
+checkpoints/
+runs/
+*.zip
+*.pt
