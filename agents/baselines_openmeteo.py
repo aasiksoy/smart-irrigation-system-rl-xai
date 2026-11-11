@@ -80,7 +80,7 @@ def print_comparison_table(results_by_policy):
 def main():
     crop = CropParams()
     length = crop.season_length
-    test_soils = make_soils(20, seed=200)
+    test_soils = make_soils(20, seed=1000)
 
     test = {site: load_seasons(site, TEST_YEARS, start, length)
             for site, start in PLANTING.items()}

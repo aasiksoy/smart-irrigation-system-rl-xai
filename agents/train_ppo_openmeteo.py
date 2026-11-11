@@ -30,7 +30,7 @@ def main():
     length = crop.season_length
     
     train_soils = make_soils(50, seed=100)
-    test_soils = make_soils(20, seed=200)      # different seed, unseen soils
+    test_soils = make_soils(20, seed=2000)      # different seed, unseen soils
 
     train = [s for site, start in PLANTING.items()
              for s in load_seasons(site, TRAIN_YEARS, start, length)]
