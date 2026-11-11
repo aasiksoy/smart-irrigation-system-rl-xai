@@ -27,3 +27,4 @@ pytest
 openmeteo-requests
 requests-cache
 retry-requests
+aquacrop

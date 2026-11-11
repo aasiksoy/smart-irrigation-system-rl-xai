@@ -31,14 +31,13 @@ def run_season(env, choose_action, seed=None):
         "days": days,
     }
 
-def evaluate(choose_action, soils, test_seasons, **env_kwargs):
+def evaluate(choose_action, soils, test_seasons, informed=False): 
+    """Play every (soil, season) pair once with this strategy; return the averages."""
     results = []
-    episode = 0
-    for soil in soils:
+    for soil in soils: 
         for season in test_seasons:
-            eval_env = IrrigationEnv([soil], [season], **env_kwargs)
-            result = run_season(eval_env, choose_action, seed=episode)
-            episode += 1
+            eval_env = IrrigationEnv([soil], [season], informed=informed)
+            result = run_season(eval_env, choose_action, seed=0)
             result["soil"] = soil 
             results.append(result)
     

@@ -24,26 +24,14 @@ class IrrigationEnv(gym.Env):
         self.informed = informed
 
     def __init__(self, soil_options: list[SoilParams], weather_options,
-                 crop: CropParams = None, informed: bool = False, remember_start: bool = False,
-                 start_range=None, informed_params=None,
-                 stress_memory: bool = False, probe_bonus: float = 0.0):
+                 crop: CropParams = None, informed: bool = False):
         super().__init__()
         self.soil_options = soil_options
         self.soil = None
         self.weather_options = weather_options
         self.weather = None
         self.crop = crop if crop is not None else CropParams()
-        if informed_params is None:
-            informed_params = ["theta_wp", "theta_fc", "drain_rate"] if informed else []
-        self.informed_params = list(informed_params)
-        self.informed = len(self.informed_params) > 0
-        self.remember_start = remember_start
-        self.theta_start = 0.0
-        self.start_range = start_range
-        self.stress_memory = stress_memory
-        self.probe_bonus = probe_bonus
-        self.stress_seen = 0.0
-        self.theta_stress_seen = 0.0
+        self.informed = informed  
 
         self.action_space = spaces.Discrete(len(self.IRRIGATION_LEVELS))
 
@@ -51,18 +39,9 @@ class IrrigationEnv(gym.Env):
         low = np.zeros(5, dtype=np.float32)
         high = np.array([1.0, 15.0, 200.0, 200.0, 1.0], dtype=np.float32) / self.OBS_SCALE
 
-        if self.remember_start:
-            low = np.concatenate([low, np.zeros(1, dtype=np.float32)])
-            high = np.concatenate([high, np.ones(1, dtype=np.float32)])
-
-        if self.stress_memory:
-            low = np.concatenate([low, np.zeros(2, dtype=np.float32)])
-            high = np.concatenate([high, np.ones(2, dtype=np.float32)])
-
         if self.informed:
-            n = len(self.informed_params)
-            low = np.concatenate([low, np.zeros(n, dtype=np.float32)])
-            high = np.concatenate([high, np.ones(n, dtype=np.float32)])
+            low = np.concatenate([low, np.zeros(3, dtype=np.float32)])
+            high = np.concatenate([high, np.ones(3, dtype=np.float32)])
 
         self.observation_space = spaces.Box(low=low, high=high, dtype=np.float32)
 
@@ -83,18 +62,10 @@ class IrrigationEnv(gym.Env):
         obs = np.array([theta, et0, rain_today, rain_tomorrow, season_progress],
                        dtype=np.float32) / self.OBS_SCALE
 
-        if self.remember_start:
-            obs = np.concatenate([obs, np.array([self.theta_start / 0.5], dtype=np.float32)])
-
-        if self.stress_memory:
-            memory = np.array([self.stress_seen, self.theta_stress_seen / 0.5], dtype=np.float32)
-            obs = np.concatenate([obs, memory])
-
         if self.informed:
-            values = {"theta_wp": self.soil.theta_wp / 0.5,
-                      "theta_fc": self.soil.theta_fc / 0.5,
-                      "drain_rate": self.soil.drain_rate}
-            soil_info = np.array([values[p] for p in self.informed_params], dtype=np.float32)
+            soil_info = np.array([self.soil.theta_wp / 0.5,
+                                  self.soil.theta_fc / 0.5,
+                                  self.soil.drain_rate], dtype=np.float32)
             obs = np.concatenate([obs, soil_info])
 
         return obs
@@ -105,14 +76,7 @@ class IrrigationEnv(gym.Env):
         index = self.np_random.integers(0, len(self.weather_options))
         self.weather = self.weather_options[index]
         self.soil = self.soil_options[self.np_random.integers(0,len(self.soil_options))]
-        if self.start_range is None:
-            self.w = self.soil.w_fc
-        else:
-            fraction = self.np_random.uniform(self.start_range[0], self.start_range[1])
-            self.w = self.soil.w_wp + fraction * (self.soil.w_fc - self.soil.w_wp)
-        self.theta_start = theta_from_w(self.w, self.soil)
-        self.stress_seen = 0.0
-        self.theta_stress_seen = 0.0
+        self.w = self.soil.w_fc
         self.day = 0
         observation = self._get_obs()
         info = self._get_info()
@@ -144,12 +108,6 @@ class IrrigationEnv(gym.Env):
 
         reward = self._compute_reward(irrigation, day_log)
 
-        if day_log["ks"] < 1.0:
-            if self.stress_seen == 0.0:
-                reward += self.probe_bonus
-            self.stress_seen = 1.0
-            self.theta_stress_seen = max(self.theta_stress_seen, theta_from_w(self.w, self.soil))
-
         self.day += 1
         
         terminated = True if self.day >= self.crop.season_length else False
@@ -164,3 +122,4 @@ class IrrigationEnv(gym.Env):
         info.update(day_log)
 
         return observation, reward, terminated, truncated, info
+
