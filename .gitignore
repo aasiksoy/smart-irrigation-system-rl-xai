@@ -229,3 +229,4 @@ runs/
 results/
 *.zip
 *.pt
+archive_after_lstm/

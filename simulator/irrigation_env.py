@@ -8,19 +8,12 @@ class IrrigationEnv(gym.Env):
 
     IRRIGATION_LEVELS = [0.0, 5.0, 10.0, 15.0, 20.0]
     OBS_SCALE = np.array([0.5, 10.0, 50.0, 50.0, 1.0], dtype=np.float32)
+    ROOT_DEPTH_MM = 600.0
+    STRESS_MARGIN = 0.02 
 
     def __init__(self, soil_options: list[SoilParams], weather_options,
                  crop: CropParams = None, informed: bool = False, remember_start: bool = False,
-                 observe_et0: bool = True, forecast: str = "perfect"):
-        """
-        soil_options: list of SoilParams; one is picked at random each episode
-        weather_options: list of seasons, each a list of (rain_mm, et0_mm) per day
-        crop: crop curve; maize defaults if not given
-        informed: if True, the agent also sees the true soil parameters
-        remember_start: if True, the agent also sees the soil moisture of day 0
-        observe_et0: if False, the ET0 input is always 0 (ablation)
-        forecast: rain forecast for tomorrow: "perfect", "noisy" or "none"
-        """
+                 observe_et0: bool = True, forecast: str = "perfect", stress_memory: bool = False):
         super().__init__()
         self.soil_options = soil_options
         self.soil = None
@@ -35,6 +28,10 @@ class IrrigationEnv(gym.Env):
         self.observe_et0 = observe_et0
         self.forecast = forecast
         self.rain_forecast = None
+        self.stress_memory = stress_memory
+        self.stress_seen = 0.0
+        self.theta_stress = 0.0
+        self.stress_day = -1
 
         self.action_space = spaces.Discrete(len(self.IRRIGATION_LEVELS))
 
@@ -45,6 +42,10 @@ class IrrigationEnv(gym.Env):
         if self.remember_start:
             low = np.concatenate([low, np.zeros(1, dtype=np.float32)])
             high = np.concatenate([high, np.ones(1, dtype=np.float32)])
+
+        if self.stress_memory:
+            low = np.concatenate([low, np.zeros(2, dtype=np.float32)])
+            high = np.concatenate([high, np.ones(2, dtype=np.float32)])
 
         if self.informed:
             low = np.concatenate([low, np.zeros(3, dtype=np.float32)])
@@ -80,10 +81,12 @@ class IrrigationEnv(gym.Env):
         if self.remember_start:
             obs = np.concatenate([obs, np.array([self.theta_start / 0.5], dtype=np.float32)])
 
+        if self.stress_memory:
+            memory = np.array([self.stress_seen, self.theta_stress / 0.5], dtype=np.float32)
+            obs = np.concatenate([obs, memory])
+
         if self.informed:
-            soil_info = np.array([self.soil.theta_wp / 0.5,
-                                  self.soil.theta_fc / 0.5,
-                                  self.soil.drain_rate], dtype=np.float32)
+            soil_info = np.array([self.soil.theta_wp / 0.5,self.soil.theta_fc / 0.5,self.soil.drain_rate], dtype=np.float32)
             obs = np.concatenate([obs, soil_info])
 
         return obs
@@ -98,6 +101,9 @@ class IrrigationEnv(gym.Env):
         self.theta_start = theta_from_w(self.w, self.soil)
         if self.forecast == "noisy":
             self.rain_forecast = self._make_noisy_forecast()
+        self.stress_seen = 0.0
+        self.theta_stress = 0.0
+        self.stress_day = -1
         self.day = 0
         observation = self._get_obs()
         info = self._get_info()
@@ -122,6 +128,27 @@ class IrrigationEnv(gym.Env):
                 forecast[day] = self.np_random.exponential(false_mean)
         return np.minimum(forecast, 200.0)
 
+    def _detect_stress(self, theta_before, theta_after, rain, irrigation, et0):
+        """Detect crop stress from the soil-moisture sensor alone.
+
+        On a day without rain or irrigation, with the soil below field capacity (so nothing
+        drains), the drop in soil moisture is exactly the water the crop used. If the crop
+        used clearly less than an unstressed crop would (Kc x ET0), it is stressed. The
+        moisture at the start of that day is remembered: it is just below the stress
+        threshold. Uses only what a farmer knows: sensor readings, rain, own irrigation,
+        ET0, the crop curve, the root depth and the day-0 reading (field capacity).
+        """
+        if rain > 0.0 or irrigation > 0.0 or theta_before > self.theta_start:
+            return
+        potential = self.crop.kc(self.day) * et0
+        if potential < 0.1:
+            return
+        used = (theta_before - theta_after) * self.ROOT_DEPTH_MM
+        if used < (1.0 - self.STRESS_MARGIN) * potential:
+            self.stress_seen = 1.0
+            self.theta_stress = theta_before
+            self.stress_day = self.day
+
     def _get_info(self):
         """Extra information for debugging and plots, not seen by the agent."""
         return {
@@ -131,6 +158,7 @@ class IrrigationEnv(gym.Env):
             "theta_fc": self.soil.theta_fc,
             "theta_sat": self.soil.theta_sat,
             "drain_rate": self.soil.drain_rate,
+            "stress_seen": self.stress_seen,
         }
 
     def _compute_reward(self, irrigation, day_log):
@@ -143,7 +171,12 @@ class IrrigationEnv(gym.Env):
     def step(self, action):
         irrigation = self.IRRIGATION_LEVELS[action]
         rain_today, et0 = self.weather[self.day]
+        theta_before = theta_from_w(self.w, self.soil)
         self.w, day_log = step_day(self.w, rain_today, irrigation, et0, self.day, self.soil, self.crop)
+
+        if self.stress_memory and self.stress_seen == 0.0:
+            self._detect_stress(theta_before, theta_from_w(self.w, self.soil),
+                                rain_today, irrigation, et0)
 
         reward = self._compute_reward(irrigation, day_log)
 
