@@ -1,0 +1,35 @@
+
+CNN R2, seasons played by the blind agent (the CNN's training behaviour)
+part of season |   theta_wp |   theta_fc | drain_rate
+days 0-29      |       0.48 |       0.99 |       0.29
+days 30-59     |       0.50 |       0.97 |       0.05
+days 60-124    |       0.48 |       0.82 |      -0.21
+all days       |       0.49 |       0.89 |      -0.03
+
+CNN R2, seasons played by the PPO agent trained on estimates, seed 0
+part of season |   theta_wp |   theta_fc | drain_rate
+days 0-29      |       0.48 |       0.99 |       0.29
+days 30-59     |       0.49 |       0.96 |       0.11
+days 60-124    |       0.48 |       0.80 |      -0.20
+all days       |       0.48 |       0.88 |      -0.01
+
+CNN R2, seasons played by the PPO agent trained on estimates, seed 1
+part of season |   theta_wp |   theta_fc | drain_rate
+days 0-29      |       0.48 |       0.99 |       0.29
+days 30-59     |       0.49 |       0.96 |       0.09
+days 60-124    |       0.48 |       0.77 |      -0.22
+all days       |       0.48 |       0.87 |      -0.02
+
+CNN R2, seasons played by the PPO agent trained on estimates, seed 2
+part of season |   theta_wp |   theta_fc | drain_rate
+days 0-29      |       0.48 |       0.99 |       0.29
+days 30-59     |       0.49 |       0.97 |       0.09
+days 60-124    |       0.48 |       0.87 |      -0.13
+all days       |       0.48 |       0.92 |       0.03
+
+CNN R2, seasons played by the PPO agent trained on estimates, seed 3
+part of season |   theta_wp |   theta_fc | drain_rate
+days 0-29      |       0.48 |       0.99 |       0.29
+days 30-59     |       0.49 |       0.97 |       0.10
+days 60-124    |       0.48 |       0.82 |      -0.15
+all days       |       0.48 |       0.89 |       0.02

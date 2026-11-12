@@ -1,0 +1,35 @@
+[0.0 min] check_env passed
+[0.0 min] seed 0: training basic
+basic, seed 0                            | irrigation  279 mm | stressed days  7.1 | reward  -9.51
+[2.5 min] seed 0: training et0
+et0, seed 0                              | irrigation  291 mm | stressed days  5.9 | reward  -9.00
+[4.9 min] seed 0: training et0_perfect_forecast
+et0_perfect_forecast, seed 0             | irrigation  262 mm | stressed days  9.7 | reward  -8.86
+  same agent, tested with noisy forecast, seed 0 | irrigation  261 mm | stressed days 10.1 | reward  -9.12
+[7.4 min] seed 0: training et0_noisy_forecast
+et0_noisy_forecast, seed 0               | irrigation  278 mm | stressed days  4.5 | reward  -8.00
+[9.9 min] seed 1: training basic
+basic, seed 1                            | irrigation  303 mm | stressed days  3.4 | reward  -8.71
+[12.3 min] seed 1: training et0
+et0, seed 1                              | irrigation  285 mm | stressed days  5.2 | reward  -8.61
+[14.8 min] seed 1: training et0_perfect_forecast
+et0_perfect_forecast, seed 1             | irrigation  268 mm | stressed days  5.8 | reward  -8.23
+  same agent, tested with noisy forecast, seed 1 | irrigation  270 mm | stressed days  6.1 | reward  -8.39
+[17.3 min] seed 1: training et0_noisy_forecast
+et0_noisy_forecast, seed 1               | irrigation  269 mm | stressed days  7.0 | reward  -8.46
+[19.7 min] seed 2: training basic
+basic, seed 2                            | irrigation  297 mm | stressed days  4.5 | reward  -8.74
+[22.2 min] seed 2: training et0
+et0, seed 2                              | irrigation  300 mm | stressed days  4.5 | reward  -8.79
+[24.6 min] seed 2: training et0_perfect_forecast
+et0_perfect_forecast, seed 2             | irrigation  272 mm | stressed days  5.7 | reward  -7.98
+  same agent, tested with noisy forecast, seed 2 | irrigation  273 mm | stressed days  6.1 | reward  -8.13
+[27.1 min] seed 2: training et0_noisy_forecast
+et0_noisy_forecast, seed 2               | irrigation  274 mm | stressed days  7.8 | reward  -8.79
+
+Forecast ablation, blind agent, 20 unseen test soils, mean +- std over 3 seeds
+basic                                    | reward  -8.99 +- 0.37 | irrigation  293 mm | stressed days  5.0
+et0                                      | reward  -8.80 +- 0.16 | irrigation  292 mm | stressed days  5.2
+et0_perfect_forecast                     | reward  -8.35 +- 0.37 | irrigation  267 mm | stressed days  7.1
+et0_noisy_forecast                       | reward  -8.42 +- 0.32 | irrigation  274 mm | stressed days  6.4
+perfect forecast agent, tested with noisy forecast | reward  -8.54 +- 0.42 | irrigation  268 mm | stressed days  7.4

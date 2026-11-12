@@ -2,7 +2,22 @@ What skills should our agent learn?
 Resource allocation under uncertainty
 
 What info does it need?
-Sensor θ (soil moisture) , ET₀ today, Rain today, Rain forecast for tomorrow, Season progress (0 to 1, for kc)
+Sensor θ (soil moisture), ET₀ today, Rain today, Rain forecast for tomorrow, Season progress
+(0 to 1, for Kc). Today's rain is always seen (a perfect "nowcast").
+
+Environment switches (for experiments)
+- observe_et0: if False, the ET₀ input is always 0
+- forecast: "perfect" (true rain of tomorrow), "noisy" (missed rain, false alarms,
+  amount error) or "none" (always 0)
+- remember_start: the agent also sees θ on day 0 (= θ_fc, since every season starts full)
+- informed: the agent also sees θ_wp, θ_fc and drain_rate (upper reference)
+Defaults (observe_et0 = True, forecast = "perfect") give the original environment.
+
+Agents
+- Blind MLP (PPO): sees only the 5 inputs above
+- Informed MLP (PPO): also sees the true soil parameters
+- LSTM (RecurrentPPO): blind, but with memory over the season (n_steps = 2048)
+- Remember-start MLP: blind + θ on day 0
 
 What actions can the agent take?
 One discrete ( maybe later updated to continuous ) irrigation level choice per day.

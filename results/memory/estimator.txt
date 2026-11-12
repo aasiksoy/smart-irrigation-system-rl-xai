@@ -1,0 +1,19 @@
+[0.0 min] check_env passed
+[0.0 min] seed 0: PPO trained on CNN estimates
+[0.1 min] trained on estimates, seed 0 (loaded) | irrigation  228 mm | stressed days 14.7 | reward -10.09
+[0.3 min] informed agent + estimates, seed 0 | irrigation  170 mm | stressed days 39.9 | reward -27.18
+[0.3 min] seed 1: PPO trained on CNN estimates
+[0.4 min] trained on estimates, seed 1 (loaded) | irrigation  235 mm | stressed days 13.8 | reward  -9.39
+[0.5 min] informed agent + estimates, seed 1 | irrigation  166 mm | stressed days 39.5 | reward -28.04
+[0.5 min] seed 2: PPO trained on CNN estimates
+[0.6 min] trained on estimates, seed 2 (loaded) | irrigation  252 mm | stressed days  5.5 | reward  -7.38
+[0.7 min] informed agent + estimates, seed 2 | irrigation  156 mm | stressed days 41.9 | reward -31.25
+[0.7 min] seed 3: PPO trained on CNN estimates
+[0.8 min] trained on estimates, seed 3 (loaded) | irrigation  241 mm | stressed days  9.6 | reward  -8.05
+[0.8 min] seed 4: PPO trained on CNN estimates
+[4.6 min] trained on estimates, seed 4 (trained) | irrigation  235 mm | stressed days 12.0 | reward  -9.70
+
+CNN soil estimate (window 30), 20 unseen test soils, mean +- std over 5 seeds
+references: blind -8.4, stacking 30 days -6.95, remember-start -6.0, informed -5.3
+PPO trained on estimates         (n=5) | reward  -8.92 +- 1.03 | irrigation  238 mm | stressed days 11.1 | gap closed  -17%
+informed agent + estimates       (n=3) | reward -28.82 +- 1.75 | irrigation  164 mm | stressed days 40.4 | gap closed -659%
