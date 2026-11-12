@@ -1,0 +1,27 @@
+[0.0 min] check_env passed
+remember_start (loaded), seed 0 | reward   -5.9 | irrigation  255 mm | stressed  1.0 | early stress in   4% of seasons | median first day   32
+[0.1 min] seed 0: training stress_memory
+stress_memory, seed 0          | reward   -5.5 | irrigation  243 mm | stressed  1.5 | early stress in  32% of seasons | median first day   35
+[2.6 min] seed 0: training stress_memory_bonus
+stress_memory_bonus, seed 0    | reward   -5.5 | irrigation  239 mm | stressed  3.0 | early stress in  32% of seasons | median first day   35
+remember_start (loaded), seed 1 | reward   -6.2 | irrigation  247 mm | stressed  3.0 | early stress in   8% of seasons | median first day   32
+[5.2 min] seed 1: training stress_memory
+stress_memory, seed 1          | reward   -5.5 | irrigation  244 mm | stressed  1.2 | early stress in  32% of seasons | median first day   35
+[7.8 min] seed 1: training stress_memory_bonus
+stress_memory_bonus, seed 1    | reward   -5.5 | irrigation  245 mm | stressed  1.2 | early stress in  32% of seasons | median first day   35
+remember_start (loaded), seed 2 | reward   -5.8 | irrigation  261 mm | stressed  0.3 | early stress in   2% of seasons | median first day   31
+[10.4 min] seed 2: training stress_memory
+stress_memory, seed 2          | reward   -5.5 | irrigation  241 mm | stressed  1.5 | early stress in  32% of seasons | median first day   35
+[12.9 min] seed 2: training stress_memory_bonus
+stress_memory_bonus, seed 2    | reward   -5.4 | irrigation  241 mm | stressed  2.0 | early stress in  32% of seasons | median first day   35
+
+Probing experiment (start at field capacity), mean over 3 seeds
+remember_start (loaded)        | reward   -6.0 +- 0.15 | gap closed   79% |  254 mm | stressed  1.5 | early stress   5% | first day   32
+stress_memory                  | reward   -5.5 +- 0.01 | gap closed   94% |  243 mm | stressed  1.4 | early stress  32% | first day   35
+stress_memory_bonus            | reward   -5.5 +- 0.02 | gap closed   95% |  241 mm | stressed  2.1 | early stress  32% | first day   35
+
+References:
+blind                          | reward   -8.4 | gap closed    0%
+remember_start                 | reward   -6.0 | gap closed   77%
+fc_wp (knows theta_wp)         | reward   -5.4 | gap closed   97%
+informed                       | reward   -5.3 | gap closed  100%

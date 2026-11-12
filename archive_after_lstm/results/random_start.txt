@@ -1,0 +1,32 @@
+[0.0 min] check_env passed, start range (0.6, 1.0)
+[0.0 min] seed 0: training blind
+blind, seed 0                  | irrigation    286 mm | stressed days   9.2 | reward    -9.2
+[2.5 min] seed 0: training remember_start
+remember_start, seed 0         | irrigation    261 mm | stressed days   2.5 | reward    -6.1
+[4.9 min] seed 0: training informed
+informed, seed 0               | irrigation    244 mm | stressed days   3.0 | reward    -5.3
+[7.4 min] seed 1: training blind
+blind, seed 1                  | irrigation    291 mm | stressed days   7.8 | reward    -9.0
+[9.8 min] seed 1: training remember_start
+remember_start, seed 1         | irrigation    255 mm | stressed days   4.9 | reward    -6.4
+[12.2 min] seed 1: training informed
+informed, seed 1               | irrigation    249 mm | stressed days   0.1 | reward    -5.3
+[14.7 min] seed 2: training blind
+blind, seed 2                  | irrigation    276 mm | stressed days  12.2 | reward    -9.9
+[17.1 min] seed 2: training remember_start
+remember_start, seed 2         | irrigation    255 mm | stressed days   6.7 | reward    -6.8
+[19.6 min] seed 2: training informed
+informed, seed 2               | irrigation    246 mm | stressed days   1.9 | reward    -5.3
+
+Random start (0.6, 1.0), mean +- std over 3 seeds
+blind                          reward            -9.4 +- 0.38
+blind                          irrigation       284.4 +- 6.29
+blind                          stressed_days      9.7 +- 1.82
+remember_start                 reward            -6.4 +- 0.31
+remember_start                 irrigation       257.1 +- 2.82
+remember_start                 stressed_days      4.7 +- 1.71
+informed                       reward            -5.3 +- 0.01
+informed                       irrigation       246.3 +- 2.28
+informed                       stressed_days      1.7 +- 1.19
+
+remember_start closes 73% of the gap (blind -9.4 -> informed -5.3, remember start -6.4)

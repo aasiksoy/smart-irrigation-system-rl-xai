@@ -1,0 +1,21 @@
+[0.0 min] check_env passed
+[0.0 min] rule baselines (same sensor as the PPO agent)
+rule: irrigate after stress    | reward   -6.9 | irrigation  242 mm | stressed 12.2 | early stress  32% | first day   35
+rule: probe, then hold         | reward   -5.9 | irrigation  249 mm | stressed  4.8 | early stress  32% | first day   35
+[0.0 min] seed 0: training stress_only (no remember_start)
+stress_only, seed 0            | reward   -5.6 | irrigation  240 mm | stressed  3.6 | early stress  32% | first day   35
+[2.6 min] seed 1: training stress_only (no remember_start)
+stress_only, seed 1            | reward   -5.5 | irrigation  242 mm | stressed  2.2 | early stress  32% | first day   35
+[5.1 min] seed 2: training stress_only (no remember_start)
+stress_only, seed 2            | reward   -5.7 | irrigation  250 mm | stressed  1.1 | early stress  32% | first day   35
+
+Checks for the probing result (start at field capacity)
+rule: irrigate after stress    | reward   -6.9 | gap closed   49% |  242 mm | stressed 12.2
+rule: probe, then hold         | reward   -5.9 | gap closed   82% |  249 mm | stressed  4.8
+stress_only (PPO)              | reward   -5.6 +- 0.06 | gap closed   91% |  244 mm | stressed  2.3
+
+References:
+blind                          | reward   -8.4 | gap closed    0%
+remember_start                 | reward   -6.0 | gap closed   77%
+stress_memory (PPO)            | reward   -5.5 | gap closed   94%
+informed                       | reward   -5.3 | gap closed  100%

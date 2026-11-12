@@ -1,0 +1,28 @@
+[0.0 min] sensor noise with confirmation (2 consecutive days)
+[0.1 min] [1/20] fc_start_stress_only_confirm2 seed 0 (loaded): reward -6.43, irrigation 239 mm, stressed 8.5, waited 66%
+[0.1 min] [2/20] fc_start_stress_only_confirm2_noise_low seed 0 (loaded): reward -6.03, irrigation 248 mm, stressed 3.4, waited 84%
+[0.2 min] [3/20] fc_start_stress_only_confirm2_noise_mid seed 0 (loaded): reward -7.04, irrigation 253 mm, stressed 8.1, waited 46%
+[0.2 min] [4/20] fc_start_stress_only_confirm2_noise_high seed 0 (loaded): reward -12.46, irrigation 254 mm, stressed 13.6, waited 24%
+[0.3 min] [5/20] fc_start_stress_only_confirm2 seed 1 (loaded): reward -5.80, irrigation 245 mm, stressed 2.7, waited 100%
+[0.3 min] [6/20] fc_start_stress_only_confirm2_noise_low seed 1 (loaded): reward -6.28, irrigation 258 mm, stressed 3.1, waited 72%
+[0.4 min] [7/20] fc_start_stress_only_confirm2_noise_mid seed 1 (loaded): reward -7.73, irrigation 284 mm, stressed 5.5, waited 27%
+[0.4 min] [8/20] fc_start_stress_only_confirm2_noise_high seed 1 (loaded): reward -14.98, irrigation 239 mm, stressed 19.0, waited 32%
+[0.5 min] [9/20] fc_start_stress_only_confirm2 seed 2 (loaded): reward -5.83, irrigation 245 mm, stressed 2.5, waited 100%
+[0.6 min] [10/20] fc_start_stress_only_confirm2_noise_low seed 2 (loaded): reward -6.02, irrigation 247 mm, stressed 3.2, waited 99%
+[0.6 min] [11/20] fc_start_stress_only_confirm2_noise_mid seed 2 (loaded): reward -7.04, irrigation 278 mm, stressed 2.9, waited 26%
+[0.7 min] [12/20] fc_start_stress_only_confirm2_noise_high seed 2 (loaded): reward -9.37, irrigation 298 mm, stressed 6.9, waited 18%
+[0.7 min] [13/20] fc_start_stress_only_confirm2 seed 3 (loaded): reward -5.78, irrigation 243 mm, stressed 2.8, waited 100%
+[0.8 min] [14/20] fc_start_stress_only_confirm2_noise_low seed 3 (loaded): reward -6.15, irrigation 248 mm, stressed 4.2, waited 99%
+[0.8 min] [15/20] fc_start_stress_only_confirm2_noise_mid seed 3 (loaded): reward -7.18, irrigation 257 mm, stressed 7.7, waited 46%
+[0.9 min] [16/20] fc_start_stress_only_confirm2_noise_high seed 3 (loaded): reward -8.77, irrigation 283 mm, stressed 6.0, waited 22%
+[0.9 min] [17/20] fc_start_stress_only_confirm2 seed 4 (loaded): reward -5.77, irrigation 242 mm, stressed 3.2, waited 100%
+[1.0 min] [18/20] fc_start_stress_only_confirm2_noise_low seed 4 (loaded): reward -6.14, irrigation 238 mm, stressed 6.8, waited 99%
+[3.5 min] [19/20] fc_start_stress_only_confirm2_noise_mid seed 4 (trained): reward -7.39, irrigation 279 mm, stressed 4.8, waited 18%
+[6.0 min] [20/20] fc_start_stress_only_confirm2_noise_high seed 4 (trained): reward -12.11, irrigation 251 mm, stressed 12.1, waited 19%
+
+run                                           |         reward | irrigation | stressed | waited
+fc_start_stress_only_confirm2                 |  -5.92 +- 0.25 |     243 mm |      4.0 |    93% (n=5)
+fc_start_stress_only_confirm2_noise_low       |  -6.12 +- 0.09 |     248 mm |      4.1 |    91% (n=5)
+fc_start_stress_only_confirm2_noise_mid       |  -7.28 +- 0.26 |     270 mm |      5.8 |    33% (n=5)
+fc_start_stress_only_confirm2_noise_high      | -11.54 +- 2.25 |     265 mm |     11.5 |    23% (n=5)
+[6.0 min] done

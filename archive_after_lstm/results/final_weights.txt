@@ -1,0 +1,28 @@
+[0.0 min] reward weight sensitivity: {'stress_w1': 1.0, 'stress_w4': 4.0}
+[2.5 min] [1/18] stress_w1_blind seed 0 (trained): reward -7.50, irrigation 252 mm, stressed 10.5, waited 30%
+[5.0 min] [2/18] stress_w1_stress_only seed 0 (trained): reward -5.48, irrigation 241 mm, stressed 4.0, waited 100%
+[7.5 min] [3/18] stress_w1_informed seed 0 (trained): reward -5.36, irrigation 236 mm, stressed 8.3, waited 48%
+[10.0 min] [4/18] stress_w4_blind seed 0 (trained): reward -9.18, irrigation 289 mm, stressed 4.2, waited 21%
+[12.5 min] [5/18] stress_w4_stress_only seed 0 (trained): reward -5.86, irrigation 253 mm, stressed 1.1, waited 52%
+[15.1 min] [6/18] stress_w4_informed seed 0 (trained): reward -5.29, irrigation 240 mm, stressed 0.4, waited 0%
+[17.5 min] [7/18] stress_w1_blind seed 1 (trained): reward -7.46, irrigation 264 mm, stressed 7.6, waited 24%
+[20.0 min] [8/18] stress_w1_stress_only seed 1 (trained): reward -5.37, irrigation 237 mm, stressed 7.5, waited 100%
+[22.5 min] [9/18] stress_w1_informed seed 1 (trained): reward -5.33, irrigation 238 mm, stressed 2.6, waited 0%
+[25.0 min] [10/18] stress_w4_blind seed 1 (trained): reward -10.18, irrigation 271 mm, stressed 5.5, waited 17%
+[27.4 min] [11/18] stress_w4_stress_only seed 1 (trained): reward -5.64, irrigation 246 mm, stressed 1.2, waited 100%
+[29.9 min] [12/18] stress_w4_informed seed 1 (trained): reward -5.33, irrigation 242 mm, stressed 0.0, waited 0%
+[32.4 min] [13/18] stress_w1_blind seed 2 (trained): reward -7.21, irrigation 264 mm, stressed 7.8, waited 32%
+[34.9 min] [14/18] stress_w1_stress_only seed 2 (trained): reward -5.61, irrigation 251 mm, stressed 1.1, waited 100%
+[37.4 min] [15/18] stress_w1_informed seed 2 (trained): reward -5.26, irrigation 239 mm, stressed 1.1, waited 1%
+[39.8 min] [16/18] stress_w4_blind seed 2 (trained): reward -9.46, irrigation 282 mm, stressed 5.3, waited 28%
+[42.3 min] [17/18] stress_w4_stress_only seed 2 (trained): reward -5.62, irrigation 244 mm, stressed 1.6, waited 100%
+[44.8 min] [18/18] stress_w4_informed seed 2 (trained): reward -5.29, irrigation 241 mm, stressed 0.1, waited 0%
+
+run                                           |         reward | irrigation | stressed | waited
+stress_w1_blind                               |  -7.39 +- 0.13 |     260 mm |      8.6 |    29% (n=3)
+stress_w1_stress_only                         |  -5.49 +- 0.10 |     243 mm |      4.2 |   100% (n=3)
+stress_w1_informed                            |  -5.31 +- 0.04 |     237 mm |      4.0 |    16% (n=3)
+stress_w4_blind                               |  -9.60 +- 0.42 |     281 mm |      5.0 |    22% (n=3)
+stress_w4_stress_only                         |  -5.71 +- 0.11 |     247 mm |      1.3 |    84% (n=3)
+stress_w4_informed                            |  -5.30 +- 0.02 |     241 mm |      0.1 |     0% (n=3)
+[44.8 min] done

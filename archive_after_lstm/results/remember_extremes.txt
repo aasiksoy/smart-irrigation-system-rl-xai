@@ -1,0 +1,23 @@
+[0.0 min] check_env passed, start range (0.6, 1.0)
+[0.0 min] seed 0: training extremes_only
+extremes_only, seed 0     | irrigation    245 mm | stressed days  13.8 | reward    -9.8
+[2.6 min] seed 0: training start_and_extremes
+start_and_extremes, seed 0 | irrigation    252 mm | stressed days   6.9 | reward    -7.3
+[5.1 min] seed 1: training extremes_only
+extremes_only, seed 1     | irrigation    251 mm | stressed days  10.9 | reward    -9.1
+[7.6 min] seed 1: training start_and_extremes
+start_and_extremes, seed 1 | irrigation    246 mm | stressed days  12.8 | reward    -9.0
+[10.2 min] seed 2: training extremes_only
+extremes_only, seed 2     | irrigation    243 mm | stressed days  14.3 | reward   -10.3
+[12.7 min] seed 2: training start_and_extremes
+start_and_extremes, seed 2 | irrigation    256 mm | stressed days   7.1 | reward    -6.8
+
+Random start (0.6, 1.0), mean +- std over 3 seeds
+agent                     |         reward | irrigation | stressed | gap closed
+extremes_only             |   -9.8 +- 0.48 |     246 mm |     13.0 |    -9%
+start_and_extremes        |   -7.7 +- 0.95 |     251 mm |      8.9 |    41%
+
+Earlier random-start results for comparison:
+blind                     |   -9.4 | gap closed     0%
+remember_start            |   -6.4 | gap closed    73%
+informed                  |   -5.3 | gap closed   100%

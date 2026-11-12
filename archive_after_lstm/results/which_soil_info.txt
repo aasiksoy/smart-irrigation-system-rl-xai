@@ -1,0 +1,44 @@
+[0.0 min] check_env passed
+[0.0 min] seed 0: training fc_only
+fc_only, seed 0           | irrigation    255 mm | stressed days   1.0 | reward    -5.9
+[2.6 min] seed 0: training wp_only
+wp_only, seed 0           | irrigation    270 mm | stressed days   3.0 | reward    -6.7
+[5.1 min] seed 0: training drain_only
+drain_only, seed 0        | irrigation    297 mm | stressed days   3.2 | reward    -7.9
+[7.6 min] seed 0: training fc_wp
+fc_wp, seed 0             | irrigation    247 mm | stressed days   0.0 | reward    -5.5
+[10.2 min] seed 0: training fc_drain
+fc_drain, seed 0          | irrigation    261 mm | stressed days   0.1 | reward    -5.8
+[12.7 min] seed 1: training fc_only
+fc_only, seed 1           | irrigation    247 mm | stressed days   3.0 | reward    -6.2
+[15.3 min] seed 1: training wp_only
+wp_only, seed 1           | irrigation    266 mm | stressed days   5.6 | reward    -6.8
+[17.8 min] seed 1: training drain_only
+drain_only, seed 1        | irrigation    300 mm | stressed days   7.1 | reward    -9.4
+[20.3 min] seed 1: training fc_wp
+fc_wp, seed 1             | irrigation    238 mm | stressed days   2.0 | reward    -5.3
+[22.8 min] seed 1: training fc_drain
+fc_drain, seed 1          | irrigation    252 mm | stressed days   1.6 | reward    -5.8
+[25.4 min] seed 2: training fc_only
+fc_only, seed 2           | irrigation    261 mm | stressed days   0.3 | reward    -5.8
+[27.9 min] seed 2: training wp_only
+wp_only, seed 2           | irrigation    254 mm | stressed days   9.8 | reward    -7.3
+[30.4 min] seed 2: training drain_only
+drain_only, seed 2        | irrigation    276 mm | stressed days   5.7 | reward    -8.2
+[33.0 min] seed 2: training fc_wp
+fc_wp, seed 2             | irrigation    237 mm | stressed days   2.5 | reward    -5.3
+[35.5 min] seed 2: training fc_drain
+fc_drain, seed 2          | irrigation    264 mm | stressed days   0.0 | reward    -5.9
+
+Which soil information matters? Mean +- std over 3 seeds
+agent                     |         reward | irrigation | stressed | gap closed
+fc_only                   |   -6.0 +- 0.15 |     254 mm |      1.5 |    79%
+wp_only                   |   -6.9 +- 0.29 |     263 mm |      6.2 |    48%
+drain_only                |   -8.5 +- 0.64 |     291 mm |      5.3 |    -3%
+fc_wp                     |   -5.4 +- 0.06 |     241 mm |      1.5 |    98%
+fc_drain                  |   -5.8 +- 0.05 |     259 mm |      0.6 |    83%
+
+Earlier results for comparison:
+blind                     |   -8.4 | gap closed     0%
+remember_start            |   -6.0 | gap closed    77%
+informed (all three)      |   -5.3 | gap closed   100%

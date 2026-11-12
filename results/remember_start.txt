@@ -1,0 +1,7 @@
+seed 0 | irrigation 255 mm | stressed days 1.0 | reward -5.9
+seed 1 | irrigation 247 mm | stressed days 3.0 | reward -6.2
+seed 2 | irrigation 261 mm | stressed days 0.3 | reward -5.8
+remember start reward: -6.0 +- 0.15
+remember start irrigation: 254.3 +- 5.41
+remember start stressed_days: 1.5 +- 1.16
+closes 79% of the gap

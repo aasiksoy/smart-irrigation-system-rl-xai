@@ -1,0 +1,26 @@
+[0.0 min] check_env passed
+[0.0 min] seed 0: window 14 days
+[0.1 min] window 14, seed 0 (loaded) | irrigation  258 mm | stressed days  3.9 | reward  -6.40
+[0.1 min] seed 0: window 30 days
+[2.9 min] window 30, seed 0 (trained) | irrigation  243 mm | stressed days 10.4 | reward  -7.30
+[2.9 min] seed 1: window 14 days
+[2.9 min] window 14, seed 1 (loaded) | irrigation  236 mm | stressed days 12.6 | reward  -7.96
+[2.9 min] seed 1: window 30 days
+[5.7 min] window 30, seed 1 (trained) | irrigation  239 mm | stressed days 13.4 | reward  -7.79
+[5.7 min] seed 2: window 14 days
+[5.8 min] window 14, seed 2 (loaded) | irrigation  262 mm | stressed days  2.1 | reward  -6.10
+[5.8 min] seed 2: window 30 days
+[8.6 min] window 30, seed 2 (trained) | irrigation  264 mm | stressed days  1.0 | reward  -6.13
+[8.6 min] seed 3: window 14 days
+[11.3 min] window 14, seed 3 (trained) | irrigation  233 mm | stressed days 16.3 | reward  -8.22
+[11.3 min] seed 3: window 30 days
+[14.1 min] window 30, seed 3 (trained) | irrigation  242 mm | stressed days  9.2 | reward  -7.39
+[14.1 min] seed 4: window 14 days
+[16.7 min] window 14, seed 4 (trained) | irrigation  234 mm | stressed days 12.5 | reward  -8.42
+[16.7 min] seed 4: window 30 days
+[19.5 min] window 30, seed 4 (trained) | irrigation  252 mm | stressed days  2.6 | reward  -6.13
+
+Stacking, blind agent, 20 unseen test soils, mean +- std over 5 seeds
+references: blind -8.4, remember-start -6.0, informed -5.3
+window 14 days | reward  -7.42 +- 0.97 | irrigation  245 mm | stressed days  9.5 | gap closed   32%
+window 30 days | reward  -6.95 +- 0.69 | irrigation  248 mm | stressed days  7.3 | gap closed   47%

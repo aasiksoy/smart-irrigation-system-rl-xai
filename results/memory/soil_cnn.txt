@@ -1,0 +1,32 @@
+[0.0 min] collecting training windows: 1500 soils x 2 seasons
+[0.9 min] saved 75,000 training windows to data/soil_windows.npz
+[0.9 min] collecting test windows: 20 test soils x 10 test seasons, every day
+[1.0 min] epoch 1/20: loss 0.547
+[1.0 min] epoch 2/20: loss 0.483
+[1.0 min] epoch 3/20: loss 0.478
+[1.0 min] epoch 4/20: loss 0.471
+[1.1 min] epoch 5/20: loss 0.453
+[1.1 min] epoch 6/20: loss 0.418
+[1.1 min] epoch 7/20: loss 0.381
+[1.1 min] epoch 8/20: loss 0.356
+[1.1 min] epoch 9/20: loss 0.335
+[1.2 min] epoch 10/20: loss 0.324
+[1.2 min] epoch 11/20: loss 0.310
+[1.2 min] epoch 12/20: loss 0.303
+[1.2 min] epoch 13/20: loss 0.293
+[1.2 min] epoch 14/20: loss 0.286
+[1.3 min] epoch 15/20: loss 0.279
+[1.3 min] epoch 16/20: loss 0.274
+[1.3 min] epoch 17/20: loss 0.269
+[1.3 min] epoch 18/20: loss 0.265
+[1.3 min] epoch 19/20: loss 0.260
+[1.4 min] epoch 20/20: loss 0.256
+[1.4 min] saved CNN to checkpoints/memory/soil_cnn.pt
+
+CNN soil estimate, R2 on unseen test soils (1 = perfect, 0 = no better than the mean)
+part of season |   theta_wp |   theta_fc | drain_rate
+days 0-9       |       0.48 |       0.99 |       0.27
+days 10-29     |       0.48 |       0.99 |       0.85
+days 30-59     |       0.48 |       0.98 |       0.62
+days 60-124    |       0.47 |       0.95 |       0.42
+all days       |       0.47 |       0.97 |       0.53
