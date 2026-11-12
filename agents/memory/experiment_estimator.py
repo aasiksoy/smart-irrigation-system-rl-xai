@@ -81,7 +81,7 @@ def summary(name, scores):
     rewards = [s["reward"] for s in scores]
     irrigation = np.mean([s["irrigation"] for s in scores])
     stressed = np.mean([s["stressed_days"] for s in scores])
-    print(f"{name:32s} | reward {np.mean(rewards):6.2f} +- {np.std(rewards):4.2f} "
+    print(f"{name:32s} (n={len(scores)}) | reward {np.mean(rewards):6.2f} +- {np.std(rewards):4.2f} "
           f"| irrigation {irrigation:4.0f} mm | stressed days {stressed:4.1f} "
           f"| gap closed {gap_closed(np.mean(rewards)):4.0f}%")
 
@@ -106,10 +106,12 @@ def main():
         trained_scores.append(result)
         show(f"trained on estimates, seed {seed} ({status})", result)
 
-        informed = PPO.load(INFORMED_PATH.format(seed=seed))
-        result = evaluate_model(informed, cnn, test_soils, test_seasons)
-        plugin_scores.append(result)
-        show(f"informed agent + estimates, seed {seed}", result)
+        informed_path = INFORMED_PATH.format(seed=seed)
+        if os.path.exists(informed_path + ".zip"):
+            informed = PPO.load(informed_path)
+            result = evaluate_model(informed, cnn, test_soils, test_seasons)
+            plugin_scores.append(result)
+            show(f"informed agent + estimates, seed {seed}", result)
 
     print(f"\nCNN soil estimate (window {WINDOW}), 20 unseen test soils, "
           f"mean +- std over {len(SEEDS)} seeds")
