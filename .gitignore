@@ -226,5 +226,6 @@ __marimo__/
 data/
 checkpoints/
 runs/
+results/
 *.zip
 *.pt

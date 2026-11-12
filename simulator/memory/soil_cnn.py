@@ -5,6 +5,7 @@ import gymnasium as gym
 from gymnasium import spaces
 
 THETA_SCALE = 0.5
+SOIL_NAMES = ("theta_wp", "theta_fc", "drain_rate")
 
 
 class SoilCNN(nn.Module):
@@ -45,17 +46,19 @@ class EstimateWrapper(gym.Wrapper):
 
     Wraps a WindowWrapper: the CNN reads the window, the agent only gets today and the guess,
     in the same format as the informed agent (theta_wp / 0.5, theta_fc / 0.5, drain_rate).
+    `keep` chooses which of the three guesses the agent gets (default: all three).
     """
 
-    def __init__(self, env, model, mean, std):
+    def __init__(self, env, model, mean, std, keep=SOIL_NAMES):
         super().__init__(env)
         self.model = model
         self.mean = mean
         self.std = std
         self.window = env.window
+        self.keep = [SOIL_NAMES.index(name) for name in keep]
         base = env.unwrapped.observation_space
-        low = np.concatenate([base.low, np.zeros(3)]).astype(np.float32)
-        high = np.concatenate([base.high, np.ones(3)]).astype(np.float32)
+        low = np.concatenate([base.low, np.zeros(len(self.keep))]).astype(np.float32)
+        high = np.concatenate([base.high, np.ones(len(self.keep))]).astype(np.float32)
         self.observation_space = spaces.Box(low=low, high=high, dtype=np.float32)
 
     def reset(self, **kwargs):
@@ -74,4 +77,4 @@ class EstimateWrapper(gym.Wrapper):
         days = stacked.reshape(self.window, -1)
         guess = estimate_soil(self.model, self.mean, self.std, days[None])[0]
         soil_info = np.clip([guess[0] / THETA_SCALE, guess[1] / THETA_SCALE, guess[2]], 0.0, 1.0)
-        return np.concatenate([days[-1, :-1], soil_info]).astype(np.float32)
+        return np.concatenate([days[-1, :-1], soil_info[self.keep]]).astype(np.float32)

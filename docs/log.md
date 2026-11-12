@@ -108,3 +108,15 @@ blind in all seeds). Seeds split: some reach −6.1 (≈ remember-start), others
 **Learned:** Long history helps, short history hurts. Learning soil from reward alone is
 unreliable across seeds; 3 seeds were too few (14-day looked like 51%).
 **Next:** CNN soil estimator trained explicitly on the true soil, used as PPO input.
+## 2026-11-12 — CNN soil estimator
+**Did:** 1D-CNN (simulator/memory/soil_cnn.py) predicts θ_wp, θ_fc, drain_rate from the last
+30 days; trained on 1500 soils (seed 500), data from blind PPO + 20% random actions.
+PPO trained on the estimates (agents/memory/experiment_estimator.py), 5 seeds.
+**Results:** CNN R² (deterministic play): θ_fc 0.99 (days 0–29), 0.97 (30–59), ~0.8 (60+);
+θ_wp ≈ 0.48; drain_rate ≈ 0. No distribution shift (probe_cnn_shift.py).
+PPO + all 3 estimates −8.92 ± 1.03; PPO + θ_fc estimate only −8.51 ± 1.12 (≈ blind).
+Informed agent + estimates −28.8.
+**Noise test (noisy_informed.py):** informed agent with a fixed soil error per season:
+0× −5.30, 0.25× −5.59, 0.5× −6.62, 1× CNN error (θ_fc ±0.018, θ_wp ±0.031) −10.64.
+**Learned:** Soil information must be accurate to about ±0.01 θ_fc (≈ 5 mm) to help;
+at the CNN's error it is worse than no information. Memory experiments closed.
