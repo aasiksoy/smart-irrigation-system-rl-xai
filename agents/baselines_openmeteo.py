@@ -12,6 +12,7 @@ from agents.evaluate import run_season
 
 SEED = 0
 MODEL_PATH = f"checkpoints/openmeteo_experiment/ppo_mlp_informed_seed{SEED}"
+BLIND_PATH = f"checkpoints/openmeteo_experiment/ppo_mlp_blind_seed{SEED}"
 
 PLANTING = {"leuven": "05-01", "nicosia": "04-01", "seville": "04-15"}
 TEST_YEARS = range(2016, 2024)
@@ -86,22 +87,29 @@ def main():
             for site, start in PLANTING.items()}
 
     policies = {
-        "Zero Irrigation": zero_irrigation,
-        "Fixed (Every 3 Days)": FixedIntervalBaseline(interval_days=3, action=1),
-        "FAO-56 Threshold": fao56_stress_threshold,
+        "Zero Irrigation": (zero_irrigation, True),
+        "Fixed (Every 3 Days)": (FixedIntervalBaseline(interval_days=3, action=1), True),
+        "FAO-56 Threshold": (fao56_stress_threshold, True),
     }
 
-    try:
-        print(f"Loading trained PPO model from {MODEL_PATH}...")
-        model = PPO.load(MODEL_PATH)
-        policies["PPO (MLP Informed)"] = lambda obs, env: model.predict(obs, deterministic=True)[0]
-    except FileNotFoundError:
-        print(f"Checkpoint not found at {MODEL_PATH}. Running rule-based baselines only.")
+    for name, path, informed in [
+        ("PPO (MLP Informed)", MODEL_PATH, True),
+        ("PPO (MLP Blind)", BLIND_PATH, False),
+    ]:
+        try:
+            print(f"Loading {name} from {path}...")
+            model = PPO.load(path)
+            policies[name] = (
+                (lambda obs, env, m=model: m.predict(obs, deterministic=True)[0]),
+                informed,
+            )
+        except FileNotFoundError:
+            print(f"Checkpoint not found at {path}, skipping {name}.")
 
     results = {}
-    for name, policy in policies.items():
+    for name, (policy, informed) in policies.items():
         print(f"Evaluating {name}...")
-        results[name] = evaluate_policy(policy, test, test_soils, crop, informed=True)
+        results[name] = evaluate_policy(policy, test, test_soils, crop, informed=informed)
 
     print_comparison_table(results)
 
