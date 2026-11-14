@@ -135,8 +135,8 @@ at the CNN's error it is worse than no information. Memory experiments closed.
 ## 2026-11-12 — Main pipeline decided
 **Decided:** Instead of estimating the soil, the agent remembers two exact moments of the
 soil-moisture signal:
-A. θ on day 0 (= field capacity) — done, 79%.
-B. θ when crop stress is first detected (= stress threshold) — in progress.
+A. θ on day 0 (= field capacity) — done.
+B. θ when crop stress is first detected (= stress threshold).
 Then PPO (MLP) → SHAP; test on real weather (with Elif's Open-Meteo pipeline) and AquaCrop.
 LSTM, stacking and CNN are the evidence for this design, not part of the pipeline.
 **Repo:** exploratory experiments moved to agents/memory/ and simulator/memory/.
@@ -154,3 +154,75 @@ remember_start + stress_memory −5.86 ± 0.33 (240 mm, 4.3, 82%), better in all
 Stress detected in 98% of test seasons (median day 47), θ error −0.006.
 **Learned:** Two exact values from the moisture sensor close 82% of the gap and make the agent
 more reliable across seeds. Remember-start alone is 67% with 5 seeds (79% with 3 was optimistic).
+
+## 2026-11-12 — Pipeline, 5 seeds, synthetic weather
+**Did:** agents/experiment_pipeline.py synthetic: blind, informed, A, A+B with 5 seeds in one
+table (blind and informed seeds 3–4 trained new, the rest loaded).
+**Results:**
+blind      −8.40 ± 0.34 (270 mm, 6.5 stressed days)   0%
+A          −6.33 ± 0.54 (249 mm, 3.4)                 68%
+A+B        −5.86 ± 0.33 (240 mm, 4.3)                 83%, stress detected 98%
+informed   −5.35 ± 0.07 (239 mm, 1.8)                 100%
+threshold rule (knows the soil) −5.62 (253 mm, 0.0)
+**Learned:** References barely changed with 5 seeds (price of not knowing ≈ 3.05). A+B uses as
+little water as the informed agent and comes close to the threshold rule.
+
+## 2026-11-12 — Pipeline on real weather (Open-Meteo)
+**Did:** agents/experiment_pipeline.py openmeteo: same 4 agents, train 1990–2015 (3 sites, 78
+seasons), test 2016–2023 per site; 50 train / 20 test soils (seed 1000); 5 seeds.
+Uses Elif's load_seasons and planting dates (Leuven 05-01, Nicosia 04-01, Seville 04-15).
+**Results (gap closed):**
+Leuven   blind −8.84 (214 mm), A −5.15 (90%), A+B −5.24 (88%), informed −4.76 (177 mm)
+Nicosia  blind −16.60 (673 mm), A −12.83 (92%), A+B −12.77 (94%), informed −12.52 (614 mm)
+Seville  blind −17.48 (699 mm), A −13.74 (91%), A+B −13.68 (93%), informed −13.39 (630 mm)
+Stress detected in only 19% (Leuven), 9% (Nicosia), 10% (Seville) of seasons.
+**Learned:** The price of not knowing is larger on real weather (≈ 4.1 at all sites; blind
+uses 10–21% more water). A alone recovers ~90%. B rarely triggers because the agent irrigates
+almost daily in these climates (few dry days to detect stress), so A+B ≈ A. B helps when the
+soil is allowed to dry (synthetic: 68% → 83%).
+**Open question:** A relies on every season starting at field capacity → test a random start.
+
+## 2026-11-13 — Pipeline with a random start (tests the assumption of step A)
+**Did:** experiment_pipeline.py synthetic random_start: each season starts at a random
+60–100% of the plant-available water instead of at field capacity. 5 seeds, 95% CIs.
+**Results:** blind −9.53 ± 0.42 (281 mm, 10.3 stressed days); A −6.24 ± 0.32 (262 mm, 78%);
+A+B −5.55 ± 0.04, CI [−5.61, −5.49] (250 mm, 2.2, 95%, stress detected 100%);
+informed −5.33 ± 0.10 (246 mm); threshold rule −5.58 (260 mm).
+**Learned:** When the full-start assumption is broken, B takes over: A+B closes 95% of the
+gap, matches the threshold rule with less water, and is very stable across seeds (std 0.04).
+A depends on an assumption; B does not, which makes the pipeline robust.
+
+## 2026-11-13 — Pipeline on real weather with a random start
+**Did:** experiment_pipeline.py openmeteo random_start, 5 seeds, 95% CIs.
+**Results (gap closed):** Leuven A 87%, A+B 93%; Nicosia A 91%, A+B 95%; Seville A 92%, A+B 95%.
+Stress detected in 38% / 15% / 17% of seasons. A+B has about half the spread of A.
+Blind seed 2 collapsed (38–40 stressed days in Nicosia/Seville) → large blind std;
+conclusions unchanged without it. Threshold rule slightly beats informed PPO on real weather.
+**Learned:** On real weather, B mainly makes the agent reliable (fixes A's worst seed, seed 3);
+the mean gain is small and the CIs overlap → run 10 seeds.
+
+## 2026-11-13 — 10 seeds for the pipeline
+**Did:** experiment_pipeline.py with SEEDS = range(10), T_95 = 2.262 (95% CI with 10 seeds):
+synthetic full start, real weather full start, real weather random start. Seeds 0–4 loaded,
+5–9 trained. Run one after another (parallel runs did not work on the login node).
+**Results (gap closed, A / A+B):**
+synthetic, full start      70% / 88%  (B better in 10/10 seeds)
+synthetic, random start    78% / 95%  (5 seeds; CIs do not overlap)
+Leuven,  full start        89% / 89%
+Nicosia, full start        96% / 94%
+Seville, full start        96% / 94%
+Leuven,  random start      85% / 92%  (B better in 9/10 seeds)
+Nicosia, random start      86% / 91%  (B better in 6/10 seeds)
+Seville, random start      85% / 92%  (B better in 6/10 seeds)
+Synthetic references (10 seeds): blind −8.22 ± 0.32, informed −5.42 ± 0.18,
+A −6.26 ± 0.60, A+B −5.76 ± 0.26, threshold rule −5.62.
+Stress detected: synthetic 99%; real weather 18–30% (full start), 24–45% (random start).
+**Learned:** A+B closes 88–95% of the gap in every condition. B clearly helps when the soil
+dries (synthetic weather; Leuven with a random start) and on average with a random start in
+hot climates. In hot climates with a full start, the agent irrigates almost daily, B rarely
+triggers and adds nothing (A alone is already 89–96%). Measuring the threshold costs some
+stress, which occasionally hurts a seed in hot climates (seed 9, random start: 10–11 stressed
+days in Nicosia/Seville).
+**Experiments for the intermediate report: done.**
+**Next (after the report):** sensor noise on the moisture readings (main limitation of B),
+AquaCrop transfer (Elif), SHAP.

@@ -8,12 +8,26 @@ class IrrigationEnv(gym.Env):
 
     IRRIGATION_LEVELS = [0.0, 5.0, 10.0, 15.0, 20.0]
     OBS_SCALE = np.array([0.5, 10.0, 50.0, 50.0, 1.0], dtype=np.float32)
-    ROOT_DEPTH_MM = 600.0
-    STRESS_MARGIN = 0.02 
+    ROOT_DEPTH_MM = 600.0   # known root depth (0.6 m), to turn a theta change into mm
+    STRESS_MARGIN = 0.02    # water use must be at least 2% below normal to count as stress
 
     def __init__(self, soil_options: list[SoilParams], weather_options,
                  crop: CropParams = None, informed: bool = False, remember_start: bool = False,
-                 observe_et0: bool = True, forecast: str = "perfect", stress_memory: bool = False):
+                 observe_et0: bool = True, forecast: str = "perfect", stress_memory: bool = False,
+                 start_range=None):
+        """
+        soil_options: list of SoilParams; one is picked at random each episode
+        weather_options: list of seasons, each a list of (rain_mm, et0_mm) per day
+        crop: crop curve; maize defaults if not given
+        informed: if True, the agent also sees the true soil parameters
+        remember_start: if True, the agent also sees the soil moisture of day 0
+        observe_et0: if False, the ET0 input is always 0 (ablation)
+        forecast: rain forecast for tomorrow: "perfect", "noisy" or "none"
+        stress_memory: if True, the agent also sees whether stress has been detected yet and
+            the soil moisture on the day it was first detected (see _detect_stress)
+        start_range: None = every season starts at field capacity; (low, high) = the season
+            starts at a random fraction in [low, high] of the plant-available water
+        """
         super().__init__()
         self.soil_options = soil_options
         self.soil = None
@@ -29,6 +43,7 @@ class IrrigationEnv(gym.Env):
         self.forecast = forecast
         self.rain_forecast = None
         self.stress_memory = stress_memory
+        self.start_range = start_range
         self.stress_seen = 0.0
         self.theta_stress = 0.0
         self.stress_day = -1
@@ -86,7 +101,9 @@ class IrrigationEnv(gym.Env):
             obs = np.concatenate([obs, memory])
 
         if self.informed:
-            soil_info = np.array([self.soil.theta_wp / 0.5,self.soil.theta_fc / 0.5,self.soil.drain_rate], dtype=np.float32)
+            soil_info = np.array([self.soil.theta_wp / 0.5,
+                                  self.soil.theta_fc / 0.5,
+                                  self.soil.drain_rate], dtype=np.float32)
             obs = np.concatenate([obs, soil_info])
 
         return obs
@@ -97,7 +114,11 @@ class IrrigationEnv(gym.Env):
         index = self.np_random.integers(0, len(self.weather_options))
         self.weather = self.weather_options[index]
         self.soil = self.soil_options[self.np_random.integers(0,len(self.soil_options))]
-        self.w = self.soil.w_fc
+        if self.start_range is None:
+            self.w = self.soil.w_fc
+        else:
+            fraction = self.np_random.uniform(self.start_range[0], self.start_range[1])
+            self.w = self.soil.w_wp + fraction * (self.soil.w_fc - self.soil.w_wp)
         self.theta_start = theta_from_w(self.w, self.soil)
         if self.forecast == "noisy":
             self.rain_forecast = self._make_noisy_forecast()
